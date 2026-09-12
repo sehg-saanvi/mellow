@@ -35,8 +35,9 @@ const App = {
     ResetTools.init();
 
     // Initialize Auth state
-    if (window.AuthManager) {
-      AuthManager.init();
+    const auth = window.AuthManager || (typeof AuthManager !== 'undefined' ? AuthManager : null);
+    if (auth) {
+      auth.init();
     }
 
     // Initial renders
@@ -546,6 +547,13 @@ const App = {
       </div>
 
       <div class="settings-card account-session-card">
+        <h3 class="settings-section-title">App Walkthrough & Tour</h3>
+        <p class="subtle-note">Want to revisit the guided walkthrough of Mellow's features?</p>
+        <button type="button" class="secondary-pill-btn" style="margin-bottom: 16px;" onclick="AppTour.start()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          <span>Replay App Tour</span>
+        </button>
+
         <h3 class="settings-section-title">Account Session</h3>
         <p class="subtle-note">Signed in as <strong>${(window.AuthManager && AuthManager.currentUser) ? AuthManager.currentUser.email : (this.userProfile.email || 'Active session')}</strong></p>
         <button type="button" class="secondary-pill-btn signout-settings-btn" onclick="AuthManager.signOut()">
@@ -609,6 +617,10 @@ const App = {
   }
 };
 
+// Global export for window access and inline handlers
+window.App = App;
+
 window.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
+

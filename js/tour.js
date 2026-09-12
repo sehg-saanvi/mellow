@@ -4,20 +4,29 @@
 const AppTour = {
   isActive: false,
   currentStepIndex: 0,
+  _boundHandleResize: null,
+  _boundHandleScroll: null,
 
   steps: [
+    {
+      targetId: 'home-mellow-illustration',
+      fallbackSelector: '.home-hero-card',
+      title: 'Meet Mellow',
+      description: 'Your cozy companion rests quietly beside you throughout the day. No streaks, no guilt, no pressure—just gentle support at your own pace.',
+      placement: 'bottom'
+    },
     {
       targetId: 'energy-checkin-section',
       fallbackSelector: '.energy-checkin-section',
       title: 'Energy Check-In',
-      description: 'Tap how your brain feels today. Mellow gently adjusts your tasks and pacing to match your natural energy without any pressure.',
+      description: 'Tap how your brain feels today. Mellow automatically softens your tasks and pacing to match your natural energy without overwhelm.',
       placement: 'bottom'
     },
     {
       targetId: 'home-right-now-container',
       fallbackSelector: '.right-now-section',
       title: 'One Gentle Step',
-      description: 'Avoid overwhelm. Mellow highlights only your single "Right Now" task, with easy micro-steps you can tackle one by one.',
+      description: 'To prevent cognitive overload, Mellow highlights only your single "Right Now" task, broken into tiny, manageable micro-steps.',
       placement: 'bottom'
     },
     {
@@ -31,14 +40,14 @@ const AppTour = {
       targetId: 'sidebar-toggle-btn',
       fallbackSelector: '#sidebar-toggle-btn',
       title: 'Calm Tools & Community',
-      description: 'Open the sidebar anytime to explore peaceful focus timers, soothing ambient soundscapes, reset exercises, and supportive sharing.',
+      description: 'Open the sidebar anytime to explore peaceful focus timers, soothing ambient soundscapes, reset tools, and supportive peer sharing.',
       placement: 'bottom'
     },
     {
       targetId: 'bottom-mellow-home-bar',
       fallbackSelector: '#bottom-mellow-home-bar',
       title: "Mellow's Cozy Sanctuary",
-      description: 'Tap here to visit Mellow in her cozy room. As you progress gently through your day, comforting home treasures naturally unlock.',
+      description: 'Tap here to visit Mellow in her cozy room. As you complete little tasks, comforting room treasures naturally unlock over time.',
       placement: 'top'
     }
   ],
@@ -47,20 +56,38 @@ const AppTour = {
     this.isActive = true;
     this.currentStepIndex = 0;
 
-    // Ensure we are on the home screen for the tour
-    App.switchScreen('home');
-
-    // Create tour overlay container if not present
-    this.ensureOverlayExists();
-    this.renderCurrentStep();
-
-    window.addEventListener('resize', this._handleResize);
-  },
-
-  _handleResize() {
-    if (AppTour.isActive) {
-      AppTour.updatePosition();
+    // Ensure we are on the home screen
+    if (typeof App !== 'undefined' && App.switchScreen) {
+      App.switchScreen('home');
+      if (App.closeSidebar) App.closeSidebar();
     }
+
+    // Ensure overlay exists
+    this.ensureOverlayExists();
+
+    // Scroll viewport to top so tour starts from top smoothly
+    const viewport = document.querySelector('.app-screen-viewport');
+    if (viewport) {
+      viewport.scrollTop = 0;
+    }
+
+    // Attach listener bindings
+    this._boundHandleResize = () => {
+      if (this.isActive) this.updatePosition();
+    };
+    this._boundHandleScroll = () => {
+      if (this.isActive) this.updatePosition();
+    };
+
+    window.addEventListener('resize', this._boundHandleResize);
+    if (viewport) {
+      viewport.addEventListener('scroll', this._boundHandleScroll, { passive: true });
+    }
+
+    // Render first step
+    setTimeout(() => {
+      this.renderCurrentStep();
+    }, 50);
   },
 
   ensureOverlayExists() {
@@ -114,7 +141,8 @@ const AppTour = {
       </div>
     `;
 
-    // Position the spotlight and tooltip
+    // Position the spotlight and tooltip immediately, and re-verify after DOM layout
+    this.updatePosition();
     requestAnimationFrame(() => {
       this.updatePosition();
     });
@@ -136,66 +164,74 @@ const AppTour = {
 
     if (!targetEl || !spotlight || !tooltip || !shell) return;
 
-    // Scroll element into view within the screen viewport if scrollable
+    const shellRect = shell.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // Ensure target element is reasonably visible within the viewport
     const viewport = document.querySelector('.app-screen-viewport');
     if (viewport && targetEl.closest('.app-screen-viewport')) {
-      const elRect = targetEl.getBoundingClientRect();
       const vpRect = viewport.getBoundingClientRect();
-      if (elRect.top < vpRect.top || elRect.bottom > vpRect.bottom) {
-        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (targetRect.top < vpRect.top + 10 || targetRect.bottom > vpRect.bottom - 10) {
+        targetEl.scrollIntoView({ behavior: 'auto', block: 'nearest' });
       }
     }
 
-    setTimeout(() => {
-      const shellRect = shell.getBoundingClientRect();
-      const targetRect = targetEl.getBoundingClientRect();
+    // Recalculate targetRect after potential scroll adjustment
+    const updatedTargetRect = targetEl.getBoundingClientRect();
 
-      // Spotlight coordinates relative to shell
-      const spotLeft = targetRect.left - shellRect.left;
-      const spotTop = targetRect.top - shellRect.top;
-      const spotWidth = targetRect.width;
-      const spotHeight = targetRect.height;
+    // Spotlight coordinates relative to shell
+    const spotLeft = Math.max(0, updatedTargetRect.left - shellRect.left);
+    const spotTop = Math.max(0, updatedTargetRect.top - shellRect.top);
+    const spotWidth = updatedTargetRect.width;
+    const spotHeight = updatedTargetRect.height;
 
-      spotlight.style.left = `${spotLeft - 6}px`;
-      spotlight.style.top = `${spotTop - 6}px`;
-      spotlight.style.width = `${spotWidth + 12}px`;
-      spotlight.style.height = `${spotHeight + 12}px`;
-      spotlight.style.borderRadius = getComputedStyle(targetEl).borderRadius || '16px';
+    // Apply spotlight box positioning
+    const padding = 6;
+    spotlight.style.left = `${spotLeft - padding}px`;
+    spotlight.style.top = `${spotTop - padding}px`;
+    spotlight.style.width = `${spotWidth + (padding * 2)}px`;
+    spotlight.style.height = `${spotHeight + (padding * 2)}px`;
 
-      // Tooltip position
-      const tooltipHeight = tooltip.offsetHeight || 190;
-      const tooltipWidth = Math.min(shellRect.width - 32, 330);
-      tooltip.style.width = `${tooltipWidth}px`;
+    const targetRadius = window.getComputedStyle(targetEl).borderRadius;
+    spotlight.style.borderRadius = (targetRadius && targetRadius !== '0px') ? targetRadius : '16px';
 
-      let topPos;
-      let leftPos = Math.max(16, (shellRect.width - tooltipWidth) / 2);
+    // Tooltip positioning
+    const tooltipWidth = Math.min(shellRect.width - 32, 330);
+    tooltip.style.width = `${tooltipWidth}px`;
+    const tooltipHeight = tooltip.offsetHeight || 190;
 
-      if (step.placement === 'top' || spotTop > shellRect.height - 240) {
-        // Place above target
-        topPos = spotTop - tooltipHeight - 14;
-        if (pointer) {
-          pointer.className = 'tour-tooltip-pointer pointer-down';
-          const targetCenterX = spotLeft + (spotWidth / 2);
-          const pointerLeft = Math.max(20, Math.min(tooltipWidth - 20, targetCenterX - leftPos));
-          pointer.style.left = `${pointerLeft}px`;
-        }
-      } else {
-        // Place below target
-        topPos = spotTop + spotHeight + 16;
-        if (pointer) {
-          pointer.className = 'tour-tooltip-pointer pointer-up';
-          const targetCenterX = spotLeft + (spotWidth / 2);
-          const pointerLeft = Math.max(20, Math.min(tooltipWidth - 20, targetCenterX - leftPos));
-          pointer.style.left = `${pointerLeft}px`;
-        }
+    let leftPos = Math.max(16, (shellRect.width - tooltipWidth) / 2);
+    let topPos;
+
+    // Check if we place above or below
+    const fitsBelow = (spotTop + spotHeight + tooltipHeight + 20) <= shellRect.height;
+    const preferTop = step.placement === 'top' || !fitsBelow;
+
+    if (preferTop && (spotTop - tooltipHeight - 16) >= 10) {
+      // Place above target
+      topPos = spotTop - tooltipHeight - 14;
+      if (pointer) {
+        pointer.className = 'tour-tooltip-pointer pointer-down';
+        const targetCenterX = spotLeft + (spotWidth / 2);
+        const pointerLeft = Math.max(20, Math.min(tooltipWidth - 20, targetCenterX - leftPos));
+        pointer.style.left = `${pointerLeft}px`;
       }
+    } else {
+      // Place below target
+      topPos = spotTop + spotHeight + 16;
+      if (pointer) {
+        pointer.className = 'tour-tooltip-pointer pointer-up';
+        const targetCenterX = spotLeft + (spotWidth / 2);
+        const pointerLeft = Math.max(20, Math.min(tooltipWidth - 20, targetCenterX - leftPos));
+        pointer.style.left = `${pointerLeft}px`;
+      }
+    }
 
-      // Constrain within shell boundaries
-      topPos = Math.max(16, Math.min(shellRect.height - tooltipHeight - 20, topPos));
+    // Keep tooltip strictly inside the phone frame
+    topPos = Math.max(16, Math.min(shellRect.height - tooltipHeight - 16, topPos));
 
-      tooltip.style.left = `${leftPos}px`;
-      tooltip.style.top = `${topPos}px`;
-    }, 50);
+    tooltip.style.left = `${leftPos}px`;
+    tooltip.style.top = `${topPos}px`;
   },
 
   next() {
@@ -222,11 +258,25 @@ const AppTour = {
         }
       }, 250);
     }
-    window.removeEventListener('resize', this._handleResize);
-    App.setNotificationMessage("You are all set! Have a gentle, peaceful day.");
+
+    if (this._boundHandleResize) {
+      window.removeEventListener('resize', this._boundHandleResize);
+    }
+    const viewport = document.querySelector('.app-screen-viewport');
+    if (viewport && this._boundHandleScroll) {
+      viewport.removeEventListener('scroll', this._boundHandleScroll);
+    }
+
+    if (typeof App !== 'undefined' && App.setNotificationMessage) {
+      App.setNotificationMessage("You are all set! Have a gentle, peaceful day.");
+    }
   },
 
   stop() {
     this.finish();
   }
 };
+
+// Global export for inline event handlers and multi-module access
+window.AppTour = AppTour;
+

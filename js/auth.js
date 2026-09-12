@@ -257,10 +257,11 @@ const AuthManager = {
     App.setNotificationMessage(`Welcome to Mellow, ${newUser.name}. Let's take a quick tour.`);
 
     // STRICT REQUIREMENT: ONLY FOR SIGN UP -> Launch interactive tour
-    if (window.AppTour) {
+    const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
+    if (tourEngine) {
       setTimeout(() => {
-        AppTour.start();
-      }, 400);
+        tourEngine.start();
+      }, 250);
     }
   },
 
@@ -285,11 +286,16 @@ const AuthManager = {
 
   signOut() {
     this.saveSession(null);
-    if (window.AppTour) {
-      AppTour.stop();
+    const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
+    if (tourEngine) {
+      tourEngine.stop();
     }
     this.isSignUpMode = false;
     this.renderAuthUI();
     this.showAuthScreen();
   }
 };
+
+// Global export for inline handlers and window access
+window.AuthManager = AuthManager;
+
