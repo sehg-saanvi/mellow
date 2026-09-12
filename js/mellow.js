@@ -273,25 +273,70 @@ const MellowCat = {
     }
   ],
 
-  // Load unlocked state from localStorage
-  initCollectibles() {
-    try {
-      const saved = localStorage.getItem('mellow_collectibles');
-      if (saved) {
-        const unlockedIds = JSON.parse(saved);
+  getStorageKey(email) {
+    if (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey) {
+      return AuthManager.getUserStorageKey('mellow_collectibles', email);
+    }
+    return 'mellow_collectibles';
+  },
+
+  loadForAccount(email, isNewSignUp) {
+    const key = this.getStorageKey(email);
+    const baseIds = ['succulent', 'tea_mug', 'star_lantern'];
+    if (isNewSignUp) {
+      this.collectibles.forEach(c => {
+        c.unlocked = baseIds.includes(c.id);
+      });
+      this.saveCollectibles(email);
+    } else {
+      try {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          const unlockedIds = JSON.parse(saved);
+          this.collectibles.forEach(c => {
+            c.unlocked = unlockedIds.includes(c.id);
+          });
+        } else {
+          const legacy = localStorage.getItem('mellow_collectibles');
+          const unlockedIds = legacy ? JSON.parse(legacy) : baseIds;
+          this.collectibles.forEach(c => {
+            c.unlocked = unlockedIds.includes(c.id);
+          });
+          this.saveCollectibles(email);
+        }
+      } catch (e) {
         this.collectibles.forEach(c => {
-          if (unlockedIds.includes(c.id)) c.unlocked = true;
+          c.unlocked = baseIds.includes(c.id);
         });
       }
-    } catch (e) {
-      console.warn('Storage read error', e);
+    }
+    if (typeof App !== 'undefined' && App.renderFullRoomScreen) {
+      App.renderFullRoomScreen();
     }
   },
 
-  saveCollectibles() {
+  resetToDefault() {
+    const baseIds = ['succulent', 'tea_mug', 'star_lantern'];
+    this.collectibles.forEach(c => {
+      c.unlocked = baseIds.includes(c.id);
+    });
+    if (typeof App !== 'undefined' && App.renderFullRoomScreen) {
+      App.renderFullRoomScreen();
+    }
+  },
+
+  // Load unlocked state from localStorage
+  initCollectibles() {
+    const email = typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null;
+    this.loadForAccount(email, false);
+  },
+
+  saveCollectibles(optionalEmail) {
+    const email = optionalEmail || (typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null);
+    const key = this.getStorageKey(email);
     try {
       const unlockedIds = this.collectibles.filter(c => c.unlocked).map(c => c.id);
-      localStorage.setItem('mellow_collectibles', JSON.stringify(unlockedIds));
+      localStorage.setItem(key, JSON.stringify(unlockedIds));
     } catch (e) {
       console.warn('Storage save error', e);
     }

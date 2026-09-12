@@ -45,23 +45,77 @@ const TaskManager = {
     { id: 'park-2', text: 'Pick up herbal tea bags on the walk home', createdAt: '1 hour ago' }
   ],
 
-  init() {
-    try {
-      const savedTasks = localStorage.getItem('mellow_tasks');
-      this.tasks = savedTasks ? JSON.parse(savedTasks) : this.defaultTasks;
+  getStorageKey(baseKey, email) {
+    if (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey) {
+      return AuthManager.getUserStorageKey(baseKey, email);
+    }
+    return baseKey;
+  },
 
-      const savedParked = localStorage.getItem('mellow_parked');
-      this.parkedThoughts = savedParked ? JSON.parse(savedParked) : this.defaultParked;
-    } catch (e) {
-      this.tasks = this.defaultTasks;
-      this.parkedThoughts = this.defaultParked;
+  init() {
+    const email = typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null;
+    if (email) {
+      this.loadForAccount(email, false);
+    } else {
+      this.tasks = JSON.parse(JSON.stringify(this.defaultTasks));
+      this.parkedThoughts = JSON.parse(JSON.stringify(this.defaultParked));
     }
   },
 
-  save() {
+  loadForAccount(email, isNewSignUp) {
+    const tasksKey = this.getStorageKey('mellow_tasks', email);
+    const parkedKey = this.getStorageKey('mellow_parked', email);
+
+    if (isNewSignUp) {
+      // BRAND NEW USER: Fresh, pristine starter tasks specifically for this account
+      this.tasks = JSON.parse(JSON.stringify(this.defaultTasks));
+      this.parkedThoughts = JSON.parse(JSON.stringify(this.defaultParked));
+      this.save(email);
+    } else {
+      try {
+        const savedTasks = localStorage.getItem(tasksKey);
+        if (savedTasks) {
+          this.tasks = JSON.parse(savedTasks);
+        } else {
+          const legacyTasks = localStorage.getItem('mellow_tasks');
+          this.tasks = legacyTasks ? JSON.parse(legacyTasks) : JSON.parse(JSON.stringify(this.defaultTasks));
+          this.save(email);
+        }
+
+        const savedParked = localStorage.getItem(parkedKey);
+        if (savedParked) {
+          this.parkedThoughts = JSON.parse(savedParked);
+        } else {
+          const legacyParked = localStorage.getItem('mellow_parked');
+          this.parkedThoughts = legacyParked ? JSON.parse(legacyParked) : JSON.parse(JSON.stringify(this.defaultParked));
+          this.save(email);
+        }
+      } catch (e) {
+        this.tasks = JSON.parse(JSON.stringify(this.defaultTasks));
+        this.parkedThoughts = JSON.parse(JSON.stringify(this.defaultParked));
+      }
+    }
+
+    this.renderHome();
+    this.renderPlan();
+    this.renderParkedList();
+  },
+
+  resetToEmpty() {
+    this.tasks = [];
+    this.parkedThoughts = [];
+    this.renderHome();
+    this.renderPlan();
+    this.renderParkedList();
+  },
+
+  save(optionalEmail) {
+    const email = optionalEmail || (typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null);
+    const tasksKey = this.getStorageKey('mellow_tasks', email);
+    const parkedKey = this.getStorageKey('mellow_parked', email);
     try {
-      localStorage.setItem('mellow_tasks', JSON.stringify(this.tasks));
-      localStorage.setItem('mellow_parked', JSON.stringify(this.parkedThoughts));
+      localStorage.setItem(tasksKey, JSON.stringify(this.tasks));
+      localStorage.setItem(parkedKey, JSON.stringify(this.parkedThoughts));
     } catch (e) {}
   },
 

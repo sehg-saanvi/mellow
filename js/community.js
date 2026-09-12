@@ -68,19 +68,39 @@ const Community = {
     { name: 'Sam', activity: 'Tea break & resting', avatarKey: 'avatar5' }
   ],
 
-  init() {
-    try {
-      const saved = localStorage.getItem('mellow_community_posts');
-      this.posts = saved ? JSON.parse(saved) : this.defaultPosts;
-    } catch (e) {
-      this.posts = this.defaultPosts;
+  getStorageKey(email) {
+    if (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey) {
+      return AuthManager.getUserStorageKey('mellow_community_posts', email);
+    }
+    return 'mellow_community_posts';
+  },
+
+  loadForAccount(email, isNewSignUp) {
+    const key = this.getStorageKey(email);
+    if (isNewSignUp) {
+      this.posts = JSON.parse(JSON.stringify(this.defaultPosts));
+      this.save(email);
+    } else {
+      try {
+        const saved = localStorage.getItem(key);
+        this.posts = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(this.defaultPosts));
+      } catch (e) {
+        this.posts = JSON.parse(JSON.stringify(this.defaultPosts));
+      }
     }
     this.render();
   },
 
-  save() {
+  init() {
+    const email = typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null;
+    this.loadForAccount(email, false);
+  },
+
+  save(optionalEmail) {
+    const email = optionalEmail || (typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null);
+    const key = this.getStorageKey(email);
     try {
-      localStorage.setItem('mellow_community_posts', JSON.stringify(this.posts));
+      localStorage.setItem(key, JSON.stringify(this.posts));
     } catch (e) {}
   },
 

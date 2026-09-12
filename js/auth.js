@@ -11,9 +11,39 @@ const AuthManager = {
 
     if (!this.currentUser) {
       this.showAuthScreen();
+      if (typeof App !== 'undefined' && App.onUserSignOut) {
+        App.onUserSignOut();
+      }
     } else {
       this.hideAuthScreen();
-      App.setAuthenticatedUser(this.currentUser);
+      if (typeof App !== 'undefined' && App.initAccountData) {
+        App.initAccountData(this.currentUser, false);
+      }
+    }
+  },
+
+  getUserStorageKey(baseKey, email) {
+    const targetEmail = (email || (this.currentUser ? this.currentUser.email : '') || '').toLowerCase().trim();
+    if (!targetEmail) return baseKey;
+    return `${baseKey}_${targetEmail}`;
+  },
+
+  updateAccountProfile(email, profileData) {
+    if (!email) return;
+    const targetEmail = email.toLowerCase().trim();
+    const accounts = this.getAccounts();
+    const account = accounts.find(a => a.email && a.email.toLowerCase() === targetEmail);
+    if (account) {
+      if (profileData.name) account.name = profileData.name;
+      if (profileData.avatarKey !== undefined) account.avatarKey = profileData.avatarKey;
+      if (profileData.photoUrl !== undefined) account.photoUrl = profileData.photoUrl;
+      this.saveAccounts(accounts);
+    }
+    if (this.currentUser && this.currentUser.email && this.currentUser.email.toLowerCase() === targetEmail) {
+      if (profileData.name) this.currentUser.name = profileData.name;
+      if (profileData.avatarKey !== undefined) this.currentUser.avatarKey = profileData.avatarKey;
+      if (profileData.photoUrl !== undefined) this.currentUser.photoUrl = profileData.photoUrl;
+      this.saveSession(this.currentUser);
     }
   },
 
@@ -252,11 +282,13 @@ const AuthManager = {
     this.saveAccounts(accounts);
     this.saveSession({ name: newUser.name, email: newUser.email, tourCompleted: false });
 
-    // Transition to main app
+    // Transition to main app with completely clean state for new user
     this.hideAuthScreen();
-    App.setAuthenticatedUser(newUser);
-    App.switchScreen('home');
-    App.setNotificationMessage(`Welcome to Mellow, ${newUser.name}. Let's take a quick tour.`);
+    if (typeof App !== 'undefined' && App.initAccountData) {
+      App.initAccountData(newUser, true);
+      App.switchScreen('home');
+      App.setNotificationMessage(`Welcome to Mellow, ${newUser.name}. Let's take a quick tour.`);
+    }
 
     // STRICT REQUIREMENT: ONLY FOR SIGN UP -> Launch interactive tour
     const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
@@ -284,11 +316,13 @@ const AuthManager = {
 
     this.saveSession({ name: account.name, email: account.email, tourCompleted: account.tourCompleted });
 
-    // Transition to main app
+    // Transition to main app and load ONLY this account's data
     this.hideAuthScreen();
-    App.setAuthenticatedUser(account);
-    App.switchScreen('home');
-    App.setNotificationMessage(`Welcome back, ${account.name}.`);
+    if (typeof App !== 'undefined' && App.initAccountData) {
+      App.initAccountData(account, false);
+      App.switchScreen('home');
+      App.setNotificationMessage(`Welcome back, ${account.name}.`);
+    }
 
     // STRICT REQUIREMENT: NO tour after regular Sign In!
     const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
@@ -328,6 +362,9 @@ const AuthManager = {
     const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
     if (tourEngine) {
       tourEngine.stop();
+    }
+    if (typeof App !== 'undefined' && App.onUserSignOut) {
+      App.onUserSignOut();
     }
     this.isSignUpMode = false;
     this.renderAuthUI();

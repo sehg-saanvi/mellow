@@ -140,6 +140,13 @@ const FocusSession = {
     this.updateDisplay();
   },
 
+  resetSession() {
+    this.stopTimer(false);
+    this.activeTaskId = null;
+    this.activeTaskTitle = 'Deep breathing & reading';
+    this.selectMode('classic');
+  },
+
   finishTimer() {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);

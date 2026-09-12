@@ -184,21 +184,50 @@ const ResetTools = {
     }, 1000);
   },
 
-  // Brain Dump
-  loadBrainDump() {
-    const textarea = document.getElementById('braindump-textarea');
-    if (!textarea) return;
-    try {
-      const saved = localStorage.getItem('mellow_braindump');
-      if (saved) textarea.value = saved;
-    } catch (e) {}
+  // Brain Dump (Scoped per account)
+  getStorageKey(email) {
+    if (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey) {
+      return AuthManager.getUserStorageKey('mellow_braindump', email);
+    }
+    return 'mellow_braindump';
   },
 
-  saveBrainDump() {
+  loadForAccount(email, isNewSignUp) {
     const textarea = document.getElementById('braindump-textarea');
     if (!textarea) return;
+    const key = this.getStorageKey(email);
+    if (isNewSignUp) {
+      textarea.value = '';
+      this.saveBrainDump(email);
+    } else {
+      const saved = localStorage.getItem(key);
+      if (saved !== null) {
+        textarea.value = saved;
+      } else {
+        const legacy = localStorage.getItem('mellow_braindump');
+        textarea.value = legacy || '';
+        this.saveBrainDump(email);
+      }
+    }
+  },
+
+  resetToEmpty() {
+    const textarea = document.getElementById('braindump-textarea');
+    if (textarea) textarea.value = '';
+  },
+
+  loadBrainDump() {
+    const email = typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null;
+    this.loadForAccount(email, false);
+  },
+
+  saveBrainDump(optionalEmail) {
+    const textarea = document.getElementById('braindump-textarea');
+    if (!textarea) return;
+    const email = optionalEmail || (typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null);
+    const key = this.getStorageKey(email);
     try {
-      localStorage.setItem('mellow_braindump', textarea.value);
+      localStorage.setItem(key, textarea.value);
     } catch (e) {}
   },
 

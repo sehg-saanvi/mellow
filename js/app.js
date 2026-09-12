@@ -61,24 +61,46 @@ const App = {
     this.setNotificationMessage('Mellow is quietly resting beside you.');
   },
 
-  loadState() {
-    try {
-      const savedProfile = localStorage.getItem('mellow_profile');
-      if (savedProfile) this.userProfile = JSON.parse(savedProfile);
+  loadState(email) {
+    const userEmail = email || (typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : (this.userProfile.email || null));
+    const profileKey = (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey)
+      ? AuthManager.getUserStorageKey('mellow_profile', userEmail)
+      : 'mellow_profile';
+    const settingsKey = (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey)
+      ? AuthManager.getUserStorageKey('mellow_settings', userEmail)
+      : 'mellow_settings';
+    const energyKey = (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey)
+      ? AuthManager.getUserStorageKey('mellow_energy', userEmail)
+      : 'mellow_energy';
 
-      const savedSettings = localStorage.getItem('mellow_settings');
+    try {
+      const savedProfile = localStorage.getItem(profileKey);
+      if (savedProfile) this.userProfile = Object.assign(this.userProfile, JSON.parse(savedProfile));
+
+      const savedSettings = localStorage.getItem(settingsKey);
       if (savedSettings) this.settings = Object.assign(this.settings, JSON.parse(savedSettings));
 
-      const savedEnergy = localStorage.getItem('mellow_energy');
+      const savedEnergy = localStorage.getItem(energyKey);
       if (savedEnergy) this.currentEnergy = savedEnergy;
     } catch (e) {}
   },
 
   saveState() {
+    const userEmail = typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : (this.userProfile.email || null);
+    const profileKey = (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey)
+      ? AuthManager.getUserStorageKey('mellow_profile', userEmail)
+      : 'mellow_profile';
+    const settingsKey = (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey)
+      ? AuthManager.getUserStorageKey('mellow_settings', userEmail)
+      : 'mellow_settings';
+    const energyKey = (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey)
+      ? AuthManager.getUserStorageKey('mellow_energy', userEmail)
+      : 'mellow_energy';
+
     try {
-      localStorage.setItem('mellow_profile', JSON.stringify(this.userProfile));
-      localStorage.setItem('mellow_settings', JSON.stringify(this.settings));
-      localStorage.setItem('mellow_energy', this.currentEnergy);
+      localStorage.setItem(profileKey, JSON.stringify(this.userProfile));
+      localStorage.setItem(settingsKey, JSON.stringify(this.settings));
+      localStorage.setItem(energyKey, this.currentEnergy);
     } catch (e) {}
   },
 
@@ -86,16 +108,107 @@ const App = {
     return this.userProfile;
   },
 
-  setAuthenticatedUser(user) {
+  initAccountData(user, isNewSignUp) {
     if (!user) return;
-    this.userProfile.name = user.name || 'Friend';
-    if (user.email) this.userProfile.email = user.email;
-    if (user.avatarKey) this.userProfile.avatarKey = user.avatarKey;
-    if (user.photoUrl) this.userProfile.photoUrl = user.photoUrl;
-    this.saveState();
+    const email = user.email;
+
+    if (isNewSignUp) {
+      // BRAND NEW USER: start completely fresh, no prior user's data!
+      this.userProfile = {
+        name: user.name || 'Friend',
+        email: user.email,
+        avatarKey: user.avatarKey || 'avatar1',
+        photoUrl: user.photoUrl || null
+      };
+      this.settings = {
+        darkMode: false,
+        reducedMotion: false,
+        largeText: false,
+        highContrast: false,
+        soundEffects: true
+      };
+      this.currentEnergy = 'okay';
+      this.saveState();
+    } else {
+      // EXISTING SIGN IN: Load strictly saved data for this account
+      this.userProfile = {
+        name: user.name || 'Friend',
+        email: user.email,
+        avatarKey: user.avatarKey || 'avatar1',
+        photoUrl: user.photoUrl || null
+      };
+      this.loadState(email);
+      if (user.name) this.userProfile.name = user.name;
+      if (user.avatarKey) this.userProfile.avatarKey = user.avatarKey;
+      if (user.photoUrl !== undefined) this.userProfile.photoUrl = user.photoUrl;
+      this.userProfile.email = user.email;
+    }
+
+    this.applySettings();
     this.updateGreeting();
     this.renderSidebarProfile();
     this.renderAccountSettings();
+
+    // Initialize/load all modules for this specific account
+    if (typeof TaskManager !== 'undefined' && TaskManager.loadForAccount) {
+      TaskManager.loadForAccount(email, isNewSignUp);
+    }
+    if (typeof MellowCat !== 'undefined' && MellowCat.loadForAccount) {
+      MellowCat.loadForAccount(email, isNewSignUp);
+    }
+    if (typeof ResetTools !== 'undefined' && ResetTools.loadForAccount) {
+      ResetTools.loadForAccount(email, isNewSignUp);
+    }
+    if (typeof Community !== 'undefined' && Community.loadForAccount) {
+      Community.loadForAccount(email, isNewSignUp);
+    }
+
+    // Refresh display
+    const homeCat = document.getElementById('home-mellow-illustration');
+    if (homeCat) homeCat.innerHTML = MellowCat.render('calm', 100);
+
+    const focusCat = document.getElementById('focus-cat-display');
+    if (focusCat) focusCat.innerHTML = MellowCat.render('calm', 88);
+
+    this.applyEnergyUI();
+  },
+
+  onUserSignOut() {
+    this.userProfile = {
+      name: 'Friend',
+      avatarKey: 'avatar1',
+      photoUrl: null
+    };
+    this.settings = {
+      darkMode: false,
+      reducedMotion: false,
+      largeText: false,
+      highContrast: false,
+      soundEffects: true
+    };
+    this.currentEnergy = 'okay';
+    this.applySettings();
+    this.updateGreeting();
+    this.renderSidebarProfile();
+    this.renderAccountSettings();
+
+    if (typeof TaskManager !== 'undefined' && TaskManager.resetToEmpty) {
+      TaskManager.resetToEmpty();
+    }
+    if (typeof ResetTools !== 'undefined' && ResetTools.resetToEmpty) {
+      ResetTools.resetToEmpty();
+    }
+    if (typeof MellowCat !== 'undefined' && MellowCat.resetToDefault) {
+      MellowCat.resetToDefault();
+    }
+    if (typeof FocusSession !== 'undefined' && FocusSession.resetSession) {
+      FocusSession.resetSession();
+    }
+    this.closeSidebar();
+  },
+
+  setAuthenticatedUser(user) {
+    this.initAccountData(user, false);
   },
 
   updateUserProfile(name, avatarKey, photoUrl) {
@@ -110,8 +223,18 @@ const App = {
     this.saveState();
     this.updateGreeting();
     this.renderSidebarProfile();
-    Community.render();
+    if (typeof Community !== 'undefined') Community.render();
     this.renderAccountSettings();
+
+    // Persist profile updates in account record
+    if (typeof AuthManager !== 'undefined' && AuthManager.updateAccountProfile && this.userProfile.email) {
+      AuthManager.updateAccountProfile(this.userProfile.email, {
+        name: this.userProfile.name,
+        avatarKey: this.userProfile.avatarKey,
+        photoUrl: this.userProfile.photoUrl
+      });
+    }
+
     this.setNotificationMessage("Profile updated.");
   },
 
@@ -398,6 +521,7 @@ const App = {
 
   applySettings() {
     const root = document.documentElement;
+    if (!root) return;
 
     // Dark Mode
     if (this.settings.darkMode) {
