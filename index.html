@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Mellow — Productivity that works for you</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Desktop Wrapper: Center phone frame on large screens; full-bleed on mobile -->
+  <div class="mobile-outer-wrapper">
+    <!-- Master SVG linearGradients for Mellow cat (Always active, never hidden by screen switching) -->
+    <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;">
+      <defs>
+        <linearGradient id="catFurGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#F8B696"/>
+          <stop offset="55%" stop-color="#E9926B"/>
+          <stop offset="100%" stop-color="#D4774E"/>
+        </linearGradient>
+        <linearGradient id="catChestGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#FFF4ED"/>
+          <stop offset="100%" stop-color="#FDE5D5"/>
+        </linearGradient>
+        <linearGradient id="catEarInner" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#F6A8B9"/>
+          <stop offset="100%" stop-color="#EA8A9F"/>
+        </linearGradient>
+        <linearGradient id="catTailGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#D4774E"/>
+          <stop offset="70%" stop-color="#E9926B"/>
+          <stop offset="100%" stop-color="#F8B696"/>
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <div class="mobile-device-shell">
+      
+      <!-- AUTHENTICATION OVERLAY: Sign In & Sign Up Screen -->
+      <div id="auth-screen-overlay" class="auth-screen-overlay hidden">
+        <div class="auth-screen-inner">
+          <div class="auth-brand-badge">
+            <span class="mellow-badge-icon auth-cat-logo">
+              <img src="public/mellow-logo-cat.png" alt="Mellow Cat" class="auth-cat-logo-img">
+            </span>
+            <div class="auth-brand-text">
+              <h1 class="auth-brand-name">Mellow</h1>
+              <span class="auth-brand-tagline">productivity that works for you</span>
+            </div>
+          </div>
+          <div id="auth-form-container" class="auth-card-container">
+            <!-- Rendered dynamically via AuthManager.renderAuthUI() -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone Status Bar -->
+      <div class="device-status-bar">
+        <span class="status-time">9:41</span>
+        <div class="device-notch-pill"></div>
+        <div class="status-icons">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9z" opacity="0.2"/><path d="M12 5c-3.87 0-7 3.13-7 7 0 1.69.6 3.24 1.6 4.46L12 20.35l5.4-3.89C18.4 15.24 19 13.69 19 12c0-3.87-3.13-7-7-7z"/></svg>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4C7.31 4 3.07 5.9 0 8.98L12 21 24 8.98C20.93 5.9 16.69 4 12 4z"/></svg>
+          <svg viewBox="0 0 24 24" width="16" height="14" fill="currentColor"><rect x="2" y="6" width="17" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="4" y="8" width="10" height="8" rx="1"/><path d="M20 10h1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1z"/></svg>
+        </div>
+      </div>
+
+      <!-- App Header: Strictly greeting and very recent notification pill (otherwise empty) + sidebar toggle -->
+      <header class="app-top-bar">
+        <button id="sidebar-toggle-btn" class="nav-drawer-toggle" aria-label="Open navigation menu">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="16" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>
+        </button>
+
+        <div class="top-bar-content">
+          <h1 id="top-bar-greeting-text" class="top-greeting-heading">Good morning, Saanvi</h1>
+          <!-- Very recent notification pill (disappears gently to leave only the greeting) -->
+          <div id="top-recent-notification-pill" class="recent-notification-pill hidden" onclick="App.dismissNotification()">
+            <span class="notif-dot"></span>
+            <span id="top-notification-text" class="notif-text">Mellow is quietly resting beside you.</span>
+          </div>
+        </div>
+
+        <button id="top-park-fab" class="top-park-fab" onclick="TaskManager.openParkModal()" title="Park a distracting thought" aria-label="Park thought">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><circle cx="8" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="16" cy="12" r="1" fill="currentColor"></circle></svg>
+        </button>
+      </header>
+
+      <!-- Scrollable Main Content Area -->
+      <main class="app-screen-viewport">
+
+        <!-- SCREEN 1: HOME -->
+        <section id="screen-home" class="app-screen active">
+          <!-- Mellow Cat Companion Card -->
+          <div class="home-hero-card">
+            <div id="home-mellow-illustration" class="mellow-companion-box">
+              <!-- Rendered via MellowCat.render() -->
+            </div>
+            <div class="mellow-dialogue-box">
+              <p id="home-mellow-supportive-text" class="mellow-speech-text">
+                Good morning. Let's take today one little step at a time.
+              </p>
+            </div>
+          </div>
+
+          <!-- Energy Check-in: "How's your brain today?" -->
+          <div id="energy-checkin-section" class="energy-checkin-section">
+            <span class="section-micro-label">How is your brain today?</span>
+            <div class="energy-chips-grid">
+              <button class="energy-chip" data-energy="low" title="Low energy">
+                <span class="energy-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 14.5A8.5 8.5 0 0 1 9.5 3a8.5 8.5 0 1 0 11.5 11.5Z"></path><line x1="14" y1="8" x2="16" y2="8"></line><line x1="17" y1="5" x2="19" y2="5"></line></svg>
+                </span>
+                <span class="energy-title">Low</span>
+              </button>
+              <button class="energy-chip active" data-energy="okay" title="Okay energy">
+                <span class="energy-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><line x1="8" y1="14" x2="16" y2="14"></line><circle cx="9" cy="10" r="1" fill="currentColor"></circle><circle cx="15" cy="10" r="1" fill="currentColor"></circle></svg>
+                </span>
+                <span class="energy-title">Okay</span>
+              </button>
+              <button class="energy-chip" data-energy="good" title="Good energy">
+                <span class="energy-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 13.5a4 4 0 0 0 8 0"></path><circle cx="9" cy="9.5" r="1" fill="currentColor"></circle><circle cx="15" cy="9.5" r="1" fill="currentColor"></circle></svg>
+                </span>
+                <span class="energy-title">Good</span>
+              </button>
+              <button class="energy-chip" data-energy="high" title="Energised">
+                <span class="energy-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                </span>
+                <span class="energy-title">Energised</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT NOW Section (Only the most important single task) -->
+          <div class="right-now-section">
+            <div id="home-right-now-container">
+              <!-- Rendered via TaskManager.renderHome() -->
+            </div>
+          </div>
+
+          <!-- Today Section (Gentle, small list) -->
+          <div class="today-section">
+            <div class="today-section-header">
+              <span class="section-micro-label">Today's gentle intentions</span>
+              <button class="inline-add-btn" onclick="App.openNewTaskModal()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Add task</span>
+              </button>
+            </div>
+            <div id="home-today-list" class="today-tasks-list">
+              <!-- Rendered via TaskManager -->
+            </div>
+          </div>
+
+          <!-- Quick Parked Thoughts Callout -->
+          <div class="parked-peek-banner" onclick="TaskManager.openParkModal()">
+            <div class="parked-peek-left">
+              <span class="peek-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><circle cx="8" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="16" cy="12" r="1" fill="currentColor"></circle></svg>
+              </span>
+              <div class="peek-text">
+                <span class="peek-title">Got a sudden stray thought?</span>
+                <span class="peek-sub">Park it safely so you don't have to carry it.</span>
+              </div>
+            </div>
+            <span class="peek-arrow">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </span>
+          </div>
+        </section>
+
+        <!-- SCREEN 2: PLAN (Calm Calendar & Energy-based Buckets) -->
+        <section id="screen-plan" class="app-screen">
+          <div class="plan-header-card">
+            <h2 class="screen-title">Gentle Plan</h2>
+            <p class="screen-sub">Organized by your energy, not by pressure.</p>
+          </div>
+
+          <!-- Calm Calendar Strip -->
+          <div class="calm-calendar-wrapper">
+            <div class="calm-calendar-month">
+              <span class="calendar-month-name">September 2026</span>
+              <span class="calendar-subtle-hint">Flexible dates</span>
+            </div>
+            <div class="calendar-days-strip">
+              <div class="cal-day-cell past">
+                <span class="cal-day-name">Tue</span>
+                <span class="cal-day-num">8</span>
+              </div>
+              <div class="cal-day-cell past">
+                <span class="cal-day-name">Wed</span>
+                <span class="cal-day-num">9</span>
+              </div>
+              <div class="cal-day-cell past">
+                <span class="cal-day-name">Thu</span>
+                <span class="cal-day-num">10</span>
+              </div>
+              <div class="cal-day-cell active-today">
+                <span class="cal-day-name">Fri</span>
+                <span class="cal-day-num">11</span>
+                <span class="today-dot"></span>
+              </div>
+              <div class="cal-day-cell">
+                <span class="cal-day-name">Sat</span>
+                <span class="cal-day-num">12</span>
+              </div>
+              <div class="cal-day-cell">
+                <span class="cal-day-name">Sun</span>
+                <span class="cal-day-num">13</span>
+              </div>
+              <div class="cal-day-cell">
+                <span class="cal-day-name">Mon</span>
+                <span class="cal-day-num">14</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Capacity Buckets: Must Do, Would Be Nice, If I Have Energy -->
+          <div class="plan-buckets-container">
+            <div class="capacity-bucket must-do">
+              <div class="bucket-header">
+                <span class="bucket-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                </span>
+                <div class="bucket-title-group">
+                  <h3 class="bucket-title">Must Do</h3>
+                  <span class="bucket-desc">Essential items for peace of mind</span>
+                </div>
+              </div>
+              <div id="plan-bucket-must" class="bucket-items-list"></div>
+            </div>
+
+            <div class="capacity-bucket would-nice">
+              <div class="bucket-header">
+                <span class="bucket-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path></svg>
+                </span>
+                <div class="bucket-title-group">
+                  <h3 class="bucket-title">Would Be Nice</h3>
+                  <span class="bucket-desc">Optional if time opens up comfortably</span>
+                </div>
+              </div>
+              <div id="plan-bucket-nice" class="bucket-items-list"></div>
+            </div>
+
+            <div class="capacity-bucket if-energy">
+              <div class="bucket-header">
+                <span class="bucket-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7 20h10"></path><path d="M12 20v-8"></path><path d="M12 12c-3.5 0-6-3-6-6 4 0 6 2.5 6 6Z"></path></svg>
+                </span>
+                <div class="bucket-title-group">
+                  <h3 class="bucket-title">If I Have Energy</h3>
+                  <span class="bucket-desc">Flexible tasks without any deadline</span>
+                </div>
+              </div>
+              <div id="plan-bucket-energy" class="bucket-items-list"></div>
+            </div>
+          </div>
+
+          <div class="plan-add-floating-row">
+            <button class="primary-pill-btn full-width" onclick="App.openNewTaskModal()">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Add task to plan</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- SCREEN 3: FOCUS (Minimal, Audio Synthesizer, Park It) -->
+        <section id="screen-focus" class="app-screen">
+          <div class="focus-screen-wrapper">
+            
+            <!-- Focus Task Selector Bar -->
+            <div class="focus-task-bar" onclick="FocusSession.openTaskSelector()">
+              <span class="focus-task-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+              </span>
+              <div class="focus-task-texts">
+                <span class="focus-task-pre">Working on:</span>
+                <span id="focus-current-task-title" class="focus-task-current">Finish Physics Question 1</span>
+              </div>
+              <span class="focus-task-switch">Switch</span>
+            </div>
+
+            <!-- Focus Mode Chips (Tiny, Short, Classic, Deep, Open) -->
+            <div class="focus-mode-selector">
+              <button class="focus-mode-chip" data-mode="tiny">Tiny • 10m</button>
+              <button class="focus-mode-chip" data-mode="short">Short • 15m</button>
+              <button class="focus-mode-chip active" data-mode="classic">Classic • 25m</button>
+              <button class="focus-mode-chip" data-mode="deep">Deep • 45m</button>
+              <button class="focus-mode-chip" data-mode="open">Open • No timer</button>
+            </div>
+
+            <!-- Focus Main Display (Mellow + Timer) -->
+            <div class="focus-timer-card">
+              <div id="focus-cat-display" class="focus-mellow-center">
+                <!-- Rendered via FocusSession -->
+              </div>
+              <div class="focus-timer-numeric">
+                <span id="focus-timer-text" class="timer-digits">25:00</span>
+                <span id="focus-timer-sub" class="timer-sub-text">remaining gently</span>
+              </div>
+
+              <!-- Main Control Buttons -->
+              <div class="focus-main-controls">
+                <button id="focus-play-btn" class="primary-pill-btn focus-action-btn" onclick="FocusSession.toggleTimerPlay()">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+                  <span>Start</span>
+                </button>
+                <button id="focus-stop-btn" class="secondary-pill-btn focus-stop-btn" style="display:none;" onclick="FocusSession.stopTimer()">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"></rect></svg>
+                  <span>Finish early</span>
+                </button>
+              </div>
+
+              <div class="focus-park-trigger">
+                <button class="subtle-park-btn" onclick="TaskManager.openParkModal()">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><circle cx="8" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="16" cy="12" r="1" fill="currentColor"></circle></svg>
+                  <span>Park a sudden thought</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Built-in Ambient Soundscape Interface (Web Audio API Synthesizer) -->
+            <div class="focus-sound-console">
+              <div class="sound-console-header">
+                <div class="sound-title-group">
+                  <span class="sound-icon">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                  </span>
+                  <div>
+                    <span class="sound-label">Ambient Soundscape</span>
+                    <span id="audio-current-name" class="sound-current-track">Silence</span>
+                  </div>
+                </div>
+                <button id="audio-play-toggle" class="audio-toggle-btn" onclick="FocusAudio.togglePlay()" aria-label="Toggle audio">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg>
+                </button>
+              </div>
+
+              <!-- Sound Choices Chips -->
+              <div class="sound-chips-row">
+                <button class="sound-chip active" data-track="silence" onclick="FocusAudio.selectTrack('silence')">
+                  Silence
+                </button>
+                <button class="sound-chip" data-track="brown" onclick="FocusAudio.selectTrack('brown')">
+                  Brown noise
+                </button>
+                <button class="sound-chip" data-track="rain" onclick="FocusAudio.selectTrack('rain')">
+                  Rain
+                </button>
+                <button class="sound-chip" data-track="lofi" onclick="FocusAudio.selectTrack('lofi')">
+                  Lofi
+                </button>
+                <button class="sound-chip" data-track="ocean" onclick="FocusAudio.selectTrack('ocean')">
+                  Ocean
+                </button>
+                <button class="sound-chip" data-track="cafe" onclick="FocusAudio.selectTrack('cafe')">
+                  Cafe
+                </button>
+                <button class="sound-chip" data-track="ambient" onclick="FocusAudio.selectTrack('ambient')">
+                  Ambient
+                </button>
+              </div>
+
+              <!-- Volume Slider -->
+              <div class="volume-slider-row">
+                <span class="volume-icon">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                </span>
+                <input type="range" min="0" max="1" step="0.05" value="0.45" class="mellow-range" oninput="FocusAudio.setVolume(this.value)">
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- SCREEN 4: COMMUNITY (Supportive Feed, Body Doubling, Profile Connected) -->
+        <section id="screen-community" class="app-screen">
+          <div class="community-header-card">
+            <div class="comm-header-top">
+              <div>
+                <h2 class="screen-title">Community</h2>
+                <p class="screen-sub">Kind encouragement. Zero pressure or followers.</p>
+              </div>
+              <button class="primary-pill-btn small-btn" onclick="Community.openComposer()">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"></path></svg>
+                <span>I did a thing</span>
+              </button>
+            </div>
+
+            <!-- Body Doubling Strip: "Others are focusing too" -->
+            <div class="body-doubling-section">
+              <span class="doubling-label">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 20v-8"></path></svg>
+                Others focusing right now
+              </span>
+              <div id="body-doubling-scroll" class="doubling-cards-scroll">
+                <!-- Rendered via Community -->
+              </div>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="community-category-bar">
+              <button class="comm-filter-pill active" data-cat="all" onclick="Community.setCategory('all')">All</button>
+              <button class="comm-filter-pill" data-cat="wins" onclick="Community.setCategory('wins')">Tiny Wins</button>
+              <button class="comm-filter-pill" data-cat="tips" onclick="Community.setCategory('tips')">Tips</button>
+              <button class="comm-filter-pill" data-cat="talk" onclick="Community.setCategory('talk')">Talk</button>
+              <button class="comm-filter-pill" data-cat="share" onclick="Community.setCategory('share')">Quiet Share</button>
+            </div>
+          </div>
+
+          <!-- Community Feed Items -->
+          <div id="community-feed-container" class="community-feed-list">
+            <!-- Rendered via Community -->
+          </div>
+        </section>
+
+        <!-- SCREEN 5: RESET (Somatic regulation, Breathe, Brain dump, Comfort) -->
+        <section id="screen-reset" class="app-screen">
+          <div class="reset-header-card">
+            <h2 class="screen-title">Reset</h2>
+            <p class="screen-sub">Pause, soften your shoulders, and regulate gently.</p>
+
+            <!-- Reset Tool Tabs -->
+            <div class="reset-tabs-nav">
+              <button class="reset-tool-tab active" data-tool="breathe">Breathe</button>
+              <button class="reset-tool-tab" data-tool="twomin">2-min Reset</button>
+              <button class="reset-tool-tab" data-tool="dump">Brain Dump</button>
+              <button class="reset-tool-tab" data-tool="move">Move</button>
+              <button class="reset-tool-tab" data-tool="comfort">Comfort</button>
+            </div>
+          </div>
+
+          <!-- Tab 1: Breathe -->
+          <div id="reset-panel-breathe" class="reset-tool-panel active">
+            <div class="breathe-interactive-card">
+              <div class="breathing-circle-wrap">
+                <div id="breathing-visual-circle" class="breathing-circle inhale">
+                  <span id="breathing-phase-label" class="breathing-label">Inhale gently</span>
+                </div>
+              </div>
+              <p class="breathe-subtle-hint">4 seconds in • 4 seconds hold • 4 seconds out • 4 seconds rest</p>
+            </div>
+          </div>
+
+          <!-- Tab 2: 2-Minute Reset -->
+          <div id="reset-panel-twomin" class="reset-tool-panel">
+            <div class="two-min-reset-card">
+              <span class="two-min-digits" id="two-min-countdown">02:00</span>
+              <p id="two-min-prompt-text" class="two-min-prompt">Let your hands rest comfortably in your lap.</p>
+              <button id="two-min-start-btn" class="primary-pill-btn" onclick="ResetTools.startTwoMinReset()">
+                Start 2-min reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab 3: Brain Dump -->
+          <div id="reset-panel-dump" class="reset-tool-panel">
+            <div class="brain-dump-card">
+              <span class="subtle-label">Private thought offload (saved locally):</span>
+              <textarea id="braindump-textarea" class="braindump-textarea" placeholder="Type whatever is cluttering your thoughts... No formatting required." oninput="ResetTools.saveBrainDump()"></textarea>
+              <div class="dump-actions-bar">
+                <button class="pill-chip-btn" onclick="ResetTools.turnBrainDumpIntoTask()">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>Turn first line into task</span>
+                </button>
+                <button class="subtle-text-btn" onclick="ResetTools.clearBrainDump()">Clear mind</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 4: Move (30-60s movement) -->
+          <div id="reset-panel-move" class="reset-tool-panel">
+            <div id="move-prompts-list" class="move-prompts-container">
+              <!-- Rendered via ResetTools -->
+            </div>
+          </div>
+
+          <!-- Tab 5: Comfort Cards from Mellow -->
+          <div id="reset-panel-comfort" class="reset-tool-panel">
+            <div class="comfort-deck-wrapper">
+              <div id="comfort-card-display" class="comfort-card-slot">
+                <!-- Rendered via ResetTools -->
+              </div>
+              <div class="comfort-nav-buttons">
+                <button class="icon-round-btn" onclick="ResetTools.prevComfortCard()" aria-label="Previous comfort card">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <span class="comfort-deck-hint">Tap for next thought</span>
+                <button class="icon-round-btn" onclick="ResetTools.nextComfortCard()" aria-label="Next comfort card">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN: MELLOW'S ROOM & LITTLE WINS (Pure visual collectibles, zero counters!) -->
+        <section id="screen-room" class="app-screen">
+          <div class="room-screen-header">
+            <button class="screen-back-btn" onclick="App.switchScreen('home')" aria-label="Back to home">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <h2 class="screen-title">Mellow's Cozy Room</h2>
+          </div>
+          <div id="full-room-container">
+            <!-- Rendered via MellowCat.renderRoomView() -->
+          </div>
+        </section>
+
+        <!-- SCREEN: ACCOUNT & SETTINGS (Profile pic, name, appearance, accessibility) -->
+        <section id="screen-account" class="app-screen">
+          <div class="room-screen-header">
+            <button class="screen-back-btn" onclick="App.switchScreen('home')" aria-label="Back to home">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+            <h2 class="screen-title">Account & Settings</h2>
+          </div>
+          <div id="account-settings-container">
+            <!-- Rendered via App.renderAccountSettings() -->
+          </div>
+        </section>
+
+      </main>
+
+      <!-- BOTTOM AREA: Strictly visuals of Mellow cat and her home (NO TAB BUTTONS!) -->
+      <footer id="bottom-mellow-home-bar" class="bottom-mellow-home-area">
+        <!-- Rendered via App.setupBottomMellowHome() -->
+      </footer>
+
+      <!-- Phone Bottom Home Indicator -->
+      <div class="device-home-indicator">
+        <div class="home-indicator-bar"></div>
+      </div>
+
+      <!-- SLIDE-OUT SIDEBAR NAVIGATION (NO top or bottom nav bar - inside phone shell) -->
+  <div id="sidebar-overlay" class="sidebar-backdrop-overlay"></div>
+  <aside id="slide-sidebar" class="slide-navigation-sidebar" aria-label="Main Navigation">
+    <div class="sidebar-header">
+      <div class="sidebar-app-branding">
+        <span class="mellow-badge-icon mellow-logo-icon">
+          <img src="public/mellow-logo-cat.png" alt="Mellow Cat" class="sidebar-cat-logo-img">
+        </span>
+        <div class="branding-texts">
+          <span class="branding-title">Mellow</span>
+          <span class="branding-tagline">productivity that works for you</span>
+        </div>
+      </div>
+      <button id="sidebar-close-btn" class="icon-round-btn" aria-label="Close navigation">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+
+    <!-- User Profile Badge in Sidebar -->
+    <div class="sidebar-user-card" onclick="App.switchScreen('account'); App.closeSidebar();">
+      <div id="sidebar-user-avatar" class="sidebar-avatar-wrap"></div>
+      <div class="sidebar-user-details">
+        <span id="sidebar-user-name" class="sidebar-name">Saanvi</span>
+        <span class="sidebar-account-sub">View profile & settings</span>
+      </div>
+      <span class="sidebar-user-arrow">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </span>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="sidebar-links-list">
+      <button class="sidebar-nav-item active" data-screen="home">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </span>
+        <span class="nav-text">Home</span>
+      </button>
+
+      <button class="sidebar-nav-item" data-screen="plan">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </span>
+        <span class="nav-text">Plan</span>
+      </button>
+
+      <button class="sidebar-nav-item" data-screen="focus">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+        </span>
+        <span class="nav-text">Focus</span>
+      </button>
+
+      <button class="sidebar-nav-item" data-screen="community">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </span>
+        <span class="nav-text">Community</span>
+      </button>
+
+      <button class="sidebar-nav-item" data-screen="reset">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"></path></svg>
+        </span>
+        <span class="nav-text">Reset</span>
+      </button>
+
+      <div class="sidebar-divider"></div>
+
+      <button class="sidebar-nav-item" data-screen="room">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18"></path><path d="M5 21V7l7-4 7 4v14"></path><path d="M9 14h6v7H9z"></path></svg>
+        </span>
+        <span class="nav-text">Mellow's Cozy Room</span>
+      </button>
+
+      <button class="sidebar-nav-item" data-screen="account">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </span>
+        <span class="nav-text">Settings & Profile</span>
+      </button>
+    </nav>
+
+    <!-- Bottom of Sidebar: Quick Theme Toggle & Sign Out -->
+    <div class="sidebar-footer">
+      <button class="theme-quick-toggle-btn" onclick="App.toggleTheme()">
+        <span id="sidebar-theme-icon" class="theme-icon">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </span>
+        <span>Toggle Dark Theme</span>
+      </button>
+      <button class="sidebar-signout-btn" onclick="AuthManager.signOut(); App.closeSidebar();">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MODALS & SHEETS -->
+
+  <!-- Modal: Break It Down -->
+  <div id="breakdown-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="TaskManager.closeBreakdownModal()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="breakdown-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Park It -->
+  <div id="park-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="TaskManager.closeParkModal()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="park-sheet-header">
+        <div class="park-title-group">
+          <span class="thought-badge-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><circle cx="8" cy="12" r="1" fill="currentColor"></circle><circle cx="12" cy="12" r="1" fill="currentColor"></circle><circle cx="16" cy="12" r="1" fill="currentColor"></circle></svg>
+          </span>
+          <h3 class="sheet-title">Park a Thought</h3>
+        </div>
+        <button class="icon-round-btn" onclick="TaskManager.closeParkModal()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <p class="subtle-note">Offload distractions so your working memory stays free.</p>
+
+      <div class="park-input-group">
+        <input type="text" id="park-input" placeholder="e.g. Email Julia about the lecture slides..." class="mellow-input" onkeydown="if(event.key==='Enter') TaskManager.saveParkedThought()">
+        <button class="primary-pill-btn" onclick="TaskManager.saveParkedThought()">Park it</button>
+      </div>
+
+      <div id="park-mellow-feedback" class="park-feedback-toast">
+        <span class="feedback-cat">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12c1.5-2 3.5-2 4 0s2.5 2 4 0"></path></svg>
+        </span>
+        <span>Got it. You can come back to that later.</span>
+      </div>
+
+      <div class="parked-section-sub">
+        <span class="subtle-label">Currently parked thoughts:</span>
+        <div id="parked-items-list" class="parked-items-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Reschedule (Non-punitive) -->
+  <div id="reschedule-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="TaskManager.closeRescheduleModal()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="reschedule-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Add New Task -->
+  <div id="new-task-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="App.closeNewTaskModal()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="new-task-sheet-header">
+        <h3 class="sheet-title">New Gentle Task</h3>
+        <button class="icon-round-btn" onclick="App.closeNewTaskModal()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="new-task-form">
+        <label class="subtle-label" for="new-task-input">What would you like to take care of?</label>
+        <input type="text" id="new-task-input" placeholder="e.g. Read three pages of biology..." class="mellow-input" onkeydown="if(event.key==='Enter') App.submitNewTask()">
+
+        <label class="subtle-label" for="new-task-bucket">Capacity bucket:</label>
+        <select id="new-task-bucket" class="mellow-select">
+          <option value="must">Must do (Important & essential)</option>
+          <option value="nice" selected>Would be nice (Gentle & optional)</option>
+          <option value="energy">If I have energy (Flexible)</option>
+        </select>
+
+        <div class="form-action-row">
+          <button class="primary-pill-btn full-width" onclick="App.submitNewTask()">Save task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Community Composer ("I did a thing") -->
+  <div id="composer-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="Community.closeComposer()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="composer-header">
+        <h3 class="sheet-title">Share with Community</h3>
+        <button class="icon-round-btn" onclick="Community.closeComposer()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <!-- Displays User Profile Name & Avatar -->
+      <div id="composer-user-preview" class="composer-profile-row"></div>
+
+      <div class="composer-form">
+        <label class="subtle-label" for="composer-category">Select category:</label>
+        <select id="composer-category" class="mellow-select">
+          <option value="wins">Tiny Win ("I did a thing!")</option>
+          <option value="tips">Gentle Tip</option>
+          <option value="talk">Talk & Thoughts</option>
+          <option value="share">Quiet Share</option>
+        </select>
+
+        <label class="subtle-label" for="composer-text">Your note:</label>
+        <textarea id="composer-text" class="mellow-textarea" placeholder="Even opening a tab or taking a sip of water is worth sharing..."></textarea>
+
+        <div class="form-action-row">
+          <button class="primary-pill-btn full-width" onclick="Community.submitPost()">Share warmly</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Focus Task Picker -->
+  <div id="task-picker-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="FocusSession.closeTaskSelector()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="picker-header">
+        <h3 class="sheet-title">What are we working on?</h3>
+        <button class="icon-round-btn" onclick="FocusSession.closeTaskSelector()">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <div class="task-picker-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Session Complete (Pomodoro / Break) -->
+  <div id="session-complete-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="FocusSession.closeCompleteModal()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="session-complete-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal: Gift Discovery (Little Wins) -->
+  <div id="gift-modal" class="mellow-modal-sheet">
+    <div class="modal-backdrop" onclick="MellowCat.closeGiftModal()"></div>
+    <div class="modal-sheet-card">
+      <div class="sheet-drag-handle"></div>
+      <div class="gift-modal-body"></div>
+    </div>
+  </div>
+
+    </div><!-- /.mobile-device-shell -->
+  </div><!-- /.mobile-outer-wrapper -->
+
+  <!-- Scripts -->
+  <script src="js/icons.js"></script>
+  <script src="js/mellow.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/tasks.js"></script>
+  <script src="js/focus.js"></script>
+  <script src="js/community.js"></script>
+  <script src="js/reset.js"></script>
+  <script src="js/tour.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
