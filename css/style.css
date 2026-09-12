@@ -4370,7 +4370,7 @@ html.dark-theme .auth-feedback-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
 }
 
 .tour-step-badge {
@@ -4397,58 +4397,116 @@ html.dark-theme .auth-feedback-banner {
 }
 
 .tour-skip-btn:hover {
-  color: var(--text-primary);
+  color: #D4774E;
+}
+
+.tour-body-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.tour-cat-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(233, 146, 107, 0.14);
+  border: 1.5px solid rgba(233, 146, 107, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(233, 146, 107, 0.16);
+  overflow: hidden;
+}
+
+.tour-text-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .tour-title {
   font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
+  line-height: 1.25;
 }
 
 .tour-description {
   font-size: 13px;
   line-height: 1.45;
   color: var(--text-secondary);
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .tour-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.tour-controls-left {
+  display: flex;
+  align-items: center;
+  min-width: 68px;
+}
+
+.tour-back-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.tour-back-btn:hover {
+  color: var(--text-primary);
+  border-color: #E9926B;
 }
 
 .tour-dots-indicator {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .tour-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background-color: var(--border-focus);
   transition: all var(--transition-smooth);
 }
 
 .tour-dot.active {
-  width: 18px;
-  border-radius: 4px;
+  width: 14px;
+  border-radius: 3px;
   background-color: #E9926B;
 }
 
 .tour-next-btn {
-  padding: 8px 16px;
+  padding: 7px 16px;
   font-size: 13px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
 }
+
 
 
 

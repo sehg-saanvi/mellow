@@ -244,23 +244,25 @@ const AuthManager = {
       password,
       avatarKey: 'avatar1',
       photoUrl: null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      tourCompleted: false
     };
 
     accounts.push(newUser);
     this.saveAccounts(accounts);
-    this.saveSession({ name: newUser.name, email: newUser.email });
+    this.saveSession({ name: newUser.name, email: newUser.email, tourCompleted: false });
 
     // Transition to main app
     this.hideAuthScreen();
     App.setAuthenticatedUser(newUser);
+    App.switchScreen('home');
     App.setNotificationMessage(`Welcome to Mellow, ${newUser.name}. Let's take a quick tour.`);
 
     // STRICT REQUIREMENT: ONLY FOR SIGN UP -> Launch interactive tour
     const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
     if (tourEngine) {
       setTimeout(() => {
-        tourEngine.start();
+        tourEngine.start(newUser.email);
       }, 250);
     }
   },
@@ -274,14 +276,51 @@ const AuthManager = {
       return;
     }
 
-    this.saveSession({ name: account.name, email: account.email });
+    // Default existing accounts to tourCompleted: true so tour never triggers automatically on sign-in
+    if (account.tourCompleted === undefined) {
+      account.tourCompleted = true;
+      this.saveAccounts(accounts);
+    }
+
+    this.saveSession({ name: account.name, email: account.email, tourCompleted: account.tourCompleted });
 
     // Transition to main app
     this.hideAuthScreen();
     App.setAuthenticatedUser(account);
+    App.switchScreen('home');
     App.setNotificationMessage(`Welcome back, ${account.name}.`);
 
     // STRICT REQUIREMENT: NO tour after regular Sign In!
+    const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
+    if (tourEngine && tourEngine.isActive) {
+      tourEngine.stop();
+    }
+  },
+
+  markTourCompleted(email) {
+    const targetEmail = (email || (this.currentUser ? this.currentUser.email : '')).toLowerCase().trim();
+    if (!targetEmail) return;
+
+    const accounts = this.getAccounts();
+    const account = accounts.find(a => a.email && a.email.toLowerCase() === targetEmail);
+    if (account) {
+      account.tourCompleted = true;
+      this.saveAccounts(accounts);
+    }
+
+    if (this.currentUser && this.currentUser.email && this.currentUser.email.toLowerCase() === targetEmail) {
+      this.currentUser.tourCompleted = true;
+      this.saveSession(this.currentUser);
+    }
+  },
+
+  isTourCompleted(email) {
+    const targetEmail = (email || (this.currentUser ? this.currentUser.email : '')).toLowerCase().trim();
+    if (!targetEmail) return true;
+
+    const accounts = this.getAccounts();
+    const account = accounts.find(a => a.email && a.email.toLowerCase() === targetEmail);
+    return account ? !!account.tourCompleted : true;
   },
 
   signOut() {
