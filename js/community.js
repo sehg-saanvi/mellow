@@ -1,8 +1,5 @@
-// Community & Body Doubling Space for Mellow
-// STRICTLY ZERO EMOJIS - Safe, low-pressure, supportive neurodivergent connection.
-
 const Community = {
-  activeCategory: 'all', // 'all', 'wins', 'tips', 'talk', 'share'
+  activeCategory: 'all',
   posts: [],
 
   defaultPosts: [
@@ -60,7 +57,7 @@ const Community = {
     }
   ],
 
-  // Quiet Body Doubling participants
+
   bodyDoublers: [
     { name: 'Maya', activity: 'Reading chapter 2', avatarKey: 'avatar1' },
     { name: 'Alex', activity: 'Organizing desk corner', avatarKey: 'avatar3' },
