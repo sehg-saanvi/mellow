@@ -1,6 +1,3 @@
-// Authentication & Account Management for Mellow
-// STRICTLY ZERO EMOJIS - Clean vectors, soft typography, and secure local persistence.
-
 const AuthManager = {
   currentUser: null,
   isSignUpMode: false,
@@ -282,7 +279,7 @@ const AuthManager = {
     this.saveAccounts(accounts);
     this.saveSession({ name: newUser.name, email: newUser.email, tourCompleted: false });
 
-    // Transition to main app with completely clean state for new user
+   
     this.hideAuthScreen();
     if (typeof App !== 'undefined' && App.initAccountData) {
       App.initAccountData(newUser, true);
@@ -290,7 +287,7 @@ const AuthManager = {
       App.setNotificationMessage(`Welcome to Mellow, ${newUser.name}. Let's take a quick tour.`);
     }
 
-    // STRICT REQUIREMENT: ONLY FOR SIGN UP -> Launch interactive tour
+ 
     const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
     if (tourEngine) {
       setTimeout(() => {
@@ -308,7 +305,7 @@ const AuthManager = {
       return;
     }
 
-    // Default existing accounts to tourCompleted: true so tour never triggers automatically on sign-in
+ 
     if (account.tourCompleted === undefined) {
       account.tourCompleted = true;
       this.saveAccounts(accounts);
@@ -316,7 +313,7 @@ const AuthManager = {
 
     this.saveSession({ name: account.name, email: account.email, tourCompleted: account.tourCompleted });
 
-    // Transition to main app and load ONLY this account's data
+
     this.hideAuthScreen();
     if (typeof App !== 'undefined' && App.initAccountData) {
       App.initAccountData(account, false);
@@ -324,7 +321,7 @@ const AuthManager = {
       App.setNotificationMessage(`Welcome back, ${account.name}.`);
     }
 
-    // STRICT REQUIREMENT: NO tour after regular Sign In!
+ 
     const tourEngine = window.AppTour || (typeof AppTour !== 'undefined' ? AppTour : null);
     if (tourEngine && tourEngine.isActive) {
       tourEngine.stop();
@@ -372,6 +369,6 @@ const AuthManager = {
   }
 };
 
-// Global export for inline handlers and window access
+
 window.AuthManager = AuthManager;
 
