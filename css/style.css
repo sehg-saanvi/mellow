@@ -1,8 +1,7 @@
-/* Mellow - Design System & Stylesheet */
-/* STRICTLY ZERO EMOJIS - Clean vectors, soft pastels, white base, quiet dark mode */
+
 
 :root {
-  /* Core Base Colors (Clean Light Theme) */
+
   --bg-canvas: #FAF9F6;
   --bg-card: #FFFFFF;
   --bg-subtle: #F3F1EC;
@@ -13,7 +12,7 @@
   --border-soft: rgba(0, 0, 0, 0.06);
   --border-focus: rgba(0, 0, 0, 0.14);
 
-  /* Soft Pastel Accents */
+ 
   --pastel-pink: #FCE4EC;
   --pastel-pink-dark: #E57373;
   --pastel-lavender: #EDE7F6;
@@ -29,28 +28,28 @@
   --pastel-sage: #F1F8E9;
   --pastel-sage-dark: #9CCC65;
 
-  /* Elevation Shadows */
+
   --shadow-soft: 0 4px 20px -2px rgba(90, 75, 60, 0.05);
   --shadow-float: 0 12px 32px -4px rgba(90, 75, 60, 0.09);
   --shadow-modal: 0 20px 48px rgba(30, 25, 20, 0.16);
 
-  /* Geometry */
+ 
   --radius-xs: 8px;
   --radius-sm: 14px;
   --radius-md: 20px;
   --radius-lg: 28px;
   --radius-pill: 9999px;
 
-  /* Font */
+
   --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-scale: 1;
 
-  /* Motion */
+
   --transition-smooth: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   --transition-slow: 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Soothing Dark Mode: Quiet Nighttime Palette */
+
 html.dark-theme {
   --bg-canvas: #16171D;
   --bg-card: #20222B;
@@ -82,7 +81,7 @@ html.dark-theme {
   --shadow-modal: 0 20px 48px rgba(0, 0, 0, 0.6);
 }
 
-/* Accessibility: Reduced Motion */
+
 html.reduced-motion *,
 html.reduced-motion *::before,
 html.reduced-motion *::after {
@@ -91,12 +90,12 @@ html.reduced-motion *::after {
   transition-duration: 0.001s !important;
 }
 
-/* Accessibility: Larger Text */
+
 html.large-text {
   --font-scale: 1.14;
 }
 
-/* Accessibility: Higher Contrast */
+
 html.high-contrast {
   --border-soft: rgba(0, 0, 0, 0.25);
   --text-secondary: #3C3632;
@@ -106,7 +105,7 @@ html.dark-theme.high-contrast {
   --text-secondary: #DDD8D0;
 }
 
-/* Base Reset */
+
 * {
   margin: 0;
   padding: 0;
@@ -128,7 +127,7 @@ html.dark-theme body {
   background-color: #0E0F14;
 }
 
-/* Desktop Outer Container (Frames the phone) */
+
 .mobile-outer-wrapper {
   display: flex;
   align-items: center;
@@ -142,7 +141,7 @@ html.dark-theme .mobile-outer-wrapper {
   background: radial-gradient(circle at top, #1A1B22 0%, #090A0D 100%);
 }
 
-/* Phone Device Frame */
+
 .mobile-device-shell {
   width: 100%;
   max-width: 416px;
@@ -164,7 +163,7 @@ html.dark-theme .mobile-device-shell {
               0 0 0 12px rgba(255, 255, 255, 0.05);
 }
 
-/* Mobile full-bleed for phone displays */
+
 @media (max-width: 480px) {
   .mobile-outer-wrapper {
     padding: 0;
@@ -179,7 +178,7 @@ html.dark-theme .mobile-device-shell {
   }
 }
 
-/* Phone Status Bar */
+
 .device-status-bar {
   height: 44px;
   padding: 0 24px;
@@ -214,7 +213,7 @@ html.dark-theme .device-notch-pill {
   gap: 6px;
 }
 
-/* Top Bar: Strictly Greeting + Recent Notification Pill (otherwise empty) */
+
 .app-top-bar {
   padding: 4px 20px 10px 20px;
   display: flex;
@@ -265,7 +264,7 @@ html.dark-theme .device-notch-pill {
   text-overflow: ellipsis;
 }
 
-/* Very recent notification pill (appears gently, fades to keep top empty) */
+
 .recent-notification-pill {
   display: flex;
   align-items: center;
@@ -310,7 +309,7 @@ html.dark-theme .device-notch-pill {
   white-space: nowrap;
 }
 
-/* Main Screen Viewport */
+
 .app-screen-viewport {
   flex: 1;
   overflow-y: auto;
@@ -323,7 +322,7 @@ html.dark-theme .device-notch-pill {
   display: none;
 }
 
-/* App Screens */
+
 .app-screen {
   display: none;
   padding: 8px 18px 20px 18px;
@@ -340,10 +339,7 @@ html.dark-theme .device-notch-pill {
   transform: translateY(0);
 }
 
-/* ==========================================================================
-   BOTTOM AREA: Strictly visuals of Mellow Cat and her Cozy Home
-   (NO navigation tab buttons)
-   ========================================================================== */
+
 .bottom-mellow-home-area {
   padding: 8px 16px;
   background-color: var(--bg-card);
@@ -437,9 +433,7 @@ html.dark-theme .device-notch-pill {
   border-radius: var(--radius-pill);
 }
 
-/* ==========================================================================
-   SLIDE-OUT SIDEBAR NAVIGATION
-   ========================================================================== */
+
 .sidebar-backdrop-overlay {
   position: absolute;
   inset: 0;
@@ -668,9 +662,7 @@ html.dark-theme .device-notch-pill {
   color: #D32F2F;
 }
 
-/* ==========================================================================
-   SCREEN 1: HOME COMPONENTS
-   ========================================================================== */
+
 .home-hero-card {
   display: flex;
   flex-direction: column;
@@ -701,7 +693,7 @@ html.dark-theme .device-notch-pill {
   font-weight: 500;
 }
 
-/* Energy Check-in */
+
 .energy-checkin-section {
   display: flex;
   flex-direction: column;
@@ -758,7 +750,7 @@ html.dark-theme .device-notch-pill {
   font-weight: 600;
 }
 
-/* RIGHT NOW Card */
+
 .right-now-section {
   margin-top: 4px;
 }
@@ -853,7 +845,7 @@ html.dark-theme .device-notch-pill {
   gap: 10px;
 }
 
-/* Custom Checkbox (Gentle, satisfying check) */
+
 .custom-checkbox-wrap {
   position: relative;
   width: 24px;
@@ -888,7 +880,7 @@ html.dark-theme .device-notch-pill {
   color: #FFFFFF;
 }
 
-/* Buttons */
+
 .primary-pill-btn {
   display: inline-flex;
   align-items: center;
@@ -1009,7 +1001,7 @@ html.dark-theme .device-notch-pill {
   box-shadow: var(--shadow-soft);
 }
 
-/* Today Tasks List */
+
 .today-section {
   display: flex;
   flex-direction: column;
@@ -1086,7 +1078,7 @@ html.dark-theme .device-notch-pill {
   gap: 2px;
 }
 
-/* Parked Peek Callout */
+
 .parked-peek-banner {
   display: flex;
   align-items: center;
@@ -1140,9 +1132,7 @@ html.dark-theme .device-notch-pill {
   color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   SCREEN 2: PLAN (Calm Calendar & Capacity Buckets)
-   ========================================================================== */
+
 .screen-title {
   font-size: calc(20px * var(--font-scale));
   font-weight: 700;
@@ -1344,9 +1334,7 @@ html.dark-theme .device-notch-pill {
   padding: 6px 0;
 }
 
-/* ==========================================================================
-   SCREEN 3: FOCUS
-   ========================================================================== */
+
 .focus-screen-wrapper {
   display: flex;
   flex-direction: column;
@@ -1626,9 +1614,7 @@ html.dark-theme .device-notch-pill {
   cursor: pointer;
 }
 
-/* ==========================================================================
-   SCREEN 4: COMMUNITY
-   ========================================================================== */
+
 .community-header-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -1885,9 +1871,7 @@ html.dark-theme .device-notch-pill {
   margin-top: 4px;
 }
 
-/* ==========================================================================
-   SCREEN 5: RESET
-   ========================================================================== */
+
 .reset-header-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -1936,7 +1920,7 @@ html.dark-theme .device-notch-pill {
   display: block;
 }
 
-/* Box Breathing Visualizer */
+
 .breathe-interactive-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -1999,7 +1983,7 @@ html.dark-theme .device-notch-pill {
   color: var(--text-muted);
 }
 
-/* 2-Minute Reset Card */
+
 .two-min-reset-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -2025,7 +2009,7 @@ html.dark-theme .device-notch-pill {
   line-height: 1.4;
 }
 
-/* Brain Dump */
+
 .brain-dump-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -2056,7 +2040,7 @@ html.dark-theme .device-notch-pill {
   justify-content: space-between;
 }
 
-/* Move Prompts */
+
 .move-prompts-container {
   display: flex;
   flex-direction: column;
@@ -2098,7 +2082,7 @@ html.dark-theme .device-notch-pill {
   color: var(--text-secondary);
 }
 
-/* Comfort Cards Deck */
+
 .comfort-deck-wrapper {
   display: flex;
   flex-direction: column;
@@ -2173,9 +2157,7 @@ html.dark-theme .device-notch-pill {
   color: var(--text-muted);
 }
 
-/* ==========================================================================
-   SCREEN: MELLOW'S COZY ROOM & LITTLE WINS (Zero Numbers)
-   ========================================================================== */
+
 .room-screen-header {
   display: flex;
   align-items: center;
@@ -2197,9 +2179,7 @@ html.dark-theme .device-notch-pill {
   box-shadow: var(--shadow-soft);
 }
 
-/* ==========================================================================
-   SCREEN: MELLOW'S COZY ROOM — REALISTIC WARM HOME AESTHETIC
-   ========================================================================== */
+
 .cozy-room-container {
   display: flex;
   flex-direction: column;
@@ -2223,7 +2203,7 @@ html.dark-theme .cozy-room-scene {
   border-color: rgba(90, 75, 110, 0.4);
 }
 
-/* Wall & Architecture */
+
 .room-wall-structure {
   position: absolute;
   top: 0;
@@ -2271,7 +2251,7 @@ html.dark-theme .frame-art-landscape {
   background: linear-gradient(180deg, #311B92 0%, #512DA8 50%, #1B5E20 100%);
 }
 
-/* Warm Fairy String Lights */
+
 .room-fairy-lights-layer {
   position: absolute;
   top: 2px;
@@ -2300,7 +2280,7 @@ html.dark-theme .frame-art-landscape {
   100% { opacity: 1; transform: scale(1.05); }
 }
 
-/* Bay Window with Curtains and Landscape */
+
 .room-bay-window {
   position: absolute;
   top: 20px;
@@ -2423,7 +2403,7 @@ html.dark-theme .window-night-stars {
 .star-dot.s2 { top: 22px; left: 42px; width: 1.5px; height: 1.5px; opacity: 0.6; }
 .star-dot.s3 { top: 35px; left: 24px; width: 2.5px; height: 2.5px; opacity: 0.9; }
 
-/* Flowing Linen Window Curtains */
+
 .window-curtain {
   position: absolute;
   top: 0;
@@ -2497,7 +2477,7 @@ html.dark-theme .window-wooden-sill {
   background: linear-gradient(180deg, #705240 0%, #4E3628 100%);
 }
 
-/* Hanging Origami Star Lantern */
+
 .room-hanging-star-slot {
   position: absolute;
   top: 14px;
@@ -2520,7 +2500,7 @@ html.dark-theme .window-wooden-sill {
   100% { opacity: 1; }
 }
 
-/* Wooden Wall Bookshelf */
+
 .room-wood-bookshelf {
   position: absolute;
   top: 36px;
@@ -2592,7 +2572,7 @@ html.dark-theme .shelf-wooden-board {
   right: 6px;
 }
 
-/* Floor Structure & Wood Parquet */
+
 .room-floor-structure {
   position: absolute;
   bottom: 0;
@@ -2646,7 +2626,7 @@ html.dark-theme .floor-wood-planks {
   box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.35);
 }
 
-/* Study Desk on Left */
+
 .room-wooden-desk {
   position: absolute;
   bottom: 18px;
@@ -2813,7 +2793,7 @@ html.dark-theme .room-boho-woven-rug {
 .rug-fringe-left { left: -6px; }
 .rug-fringe-right { right: -6px; }
 
-/* Mellow Cat's Resting Throne in Room */
+
 .room-mellow-cat-throne {
   position: relative;
   z-index: 6;
@@ -2845,7 +2825,7 @@ html.dark-theme .mellow-tufted-pouf {
   transform: translateY(2px);
 }
 
-/* Rug Placed Items: Cushion & Bear Plushie */
+
 .rug-placed-item {
   position: absolute;
   z-index: 5;
@@ -2864,7 +2844,7 @@ html.dark-theme .mellow-tufted-pouf {
   bottom: 10px;
 }
 
-/* Real SVG Item Interaction States */
+
 .room-object-interactive {
   cursor: pointer;
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -2903,7 +2883,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   border: 1px solid var(--border-soft);
 }
 
-/* Visual Collection Showcase (NO NUMERICAL COUNTERS!) */
+
 .visual-collection-tray {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -2979,9 +2959,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   line-height: 1.35;
 }
 
-/* ==========================================================================
-   SCREEN: ACCOUNT & SETTINGS
-   ========================================================================== */
+
 .settings-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -3085,9 +3063,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   color: var(--pastel-mint-dark);
 }
 
-/* ==========================================================================
-   MODALS & BOTTOM SHEETS
-   ========================================================================== */
+
 .mellow-modal-sheet {
   position: absolute;
   inset: 0;
@@ -3192,7 +3168,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   color: var(--text-secondary);
 }
 
-/* Breakdown Modal specifics */
+
 .breakdown-header-box {
   display: flex;
   flex-direction: column;
@@ -3298,7 +3274,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   align-items: center;
 }
 
-/* Park Sheet */
+
 .park-sheet-header {
   display: flex;
   align-items: center;
@@ -3377,7 +3353,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   gap: 6px;
 }
 
-/* Reschedule Modal */
+
 .reschedule-cat-msg {
   display: flex;
   align-items: center;
@@ -3395,7 +3371,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   align-items: center;
 }
 
-/* Task Picker */
+
 .task-picker-list {
   display: flex;
   flex-direction: column;
@@ -3430,7 +3406,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   margin-top: 6px;
 }
 
-/* Session Complete Modal */
+
 .complete-cat-card {
   display: flex;
   flex-direction: column;
@@ -3457,7 +3433,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   align-items: center;
 }
 
-/* Gift Modal */
+
 .gift-animation-box {
   display: flex;
   justify-content: center;
@@ -3530,7 +3506,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   margin-bottom: 14px;
 }
 
-/* Profile preview row in composer */
+
 .composer-profile-row {
   display: flex;
   align-items: center;
@@ -3563,9 +3539,7 @@ html.dark-theme .real-room-item-svg.is-silhouette {
   color: var(--text-muted);
 }
 
-/* ==========================================================================
-   MELLOW CAT SVG ANIMATIONS & UTILITIES
-   ========================================================================== */
+
 
 .mellow-avatar-wrapper {
   display: inline-flex;
@@ -3604,9 +3578,7 @@ html.reduced-motion .mellow-tail {
   animation: none;
 }
 
-/* ==========================================================================
-   PLAN SCREEN HEADER CARD
-   ========================================================================== */
+
 .plan-header-card {
   background-color: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -3617,9 +3589,7 @@ html.reduced-motion .mellow-tail {
   gap: 4px;
 }
 
-/* ==========================================================================
-   FORM ROWS & ACTIONS
-   ========================================================================== */
+
 .form-action-row {
   margin-top: 12px;
   display: flex;
@@ -3668,9 +3638,7 @@ html.reduced-motion .mellow-tail {
   margin-bottom: 12px;
 }
 
-/* ==========================================================================
-   BUBBLE TEXT
-   ========================================================================== */
+
 .bubble-text {
   flex: 1;
 }
@@ -3697,9 +3665,7 @@ html.reduced-motion .mellow-tail {
   flex-shrink: 0;
 }
 
-/* ==========================================================================
-   COMMUNITY EXTRAS
-   ========================================================================== */
+
 .empty-feed-state {
   padding: 32px 20px;
   text-align: center;
@@ -3716,9 +3682,7 @@ html.reduced-motion .mellow-tail {
   color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   RESET SCREEN EXTRAS
-   ========================================================================== */
+
 .parked-section-sub {
   margin-top: 12px;
   display: flex;
@@ -3736,9 +3700,7 @@ html.reduced-motion .mellow-tail {
   padding-bottom: 8px;
 }
 
-/* ==========================================================================
-   EMPTY STATES & UTILITIES
-   ========================================================================== */
+
 .empty-subtasks-note {
   font-size: 12px;
   color: var(--text-muted);
@@ -3756,9 +3718,7 @@ html.reduced-motion .mellow-tail {
   margin-bottom: 12px;
 }
 
-/* ==========================================================================
-   ANIMATIONS
-   ========================================================================== */
+
 @keyframes pulseDot {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.6; transform: scale(1.3); }
@@ -3794,9 +3754,7 @@ html.reduced-motion .gift-icon-badge {
   animation: none;
 }
 
-/* ==========================================================================
-   DARK MODE TWEAKS
-   ========================================================================== */
+
 html.dark-theme .focus-pulse-dot {
   border-color: var(--bg-subtle);
 }
@@ -3814,9 +3772,7 @@ html.dark-theme .breathing-circle.exhale {
   background: radial-gradient(circle, var(--pastel-lavender) 0%, rgba(43, 37, 56, 0.7) 70%);
 }
 
-/* ==========================================================================
-   MISCELLANEOUS FIXES
-   ========================================================================== */
+
 .mellow-complete-avatar {
   display: flex;
   align-items: center;
@@ -3876,9 +3832,7 @@ html.dark-theme .breathing-circle.exhale {
 .cal-day-cell:hover { background-color: var(--bg-subtle); }
 .cal-day-cell.active-today:hover { background-color: var(--pastel-peach); }
 
-/* ==========================================================================
-   PROFILE PHOTO UPLOADER & AVATAR ENHANCEMENTS
-   ========================================================================== */
+
 .avatar-photo-circle {
   width: 100%;
   height: 100%;
@@ -3965,9 +3919,7 @@ html.dark-theme .breathing-circle.exhale {
   border-color: var(--border-focus);
 }
 
-/* ==========================================================================
-   DETAILED MELLOW THE CAT ANIMATIONS & RENDERING
-   ========================================================================== */
+
 .mellow-avatar-wrapper {
   display: flex;
   align-items: center;
@@ -4031,9 +3983,7 @@ html.reduced-motion .mellow-cat-breathe {
   animation: none !important;
 }
 
-/* ==========================================================================
-   AUTHENTICATION SCREEN (Sign In & Sign Up)
-   ========================================================================== */
+
 
 .auth-screen-overlay {
   position: absolute;
@@ -4286,9 +4236,7 @@ html.dark-theme .auth-feedback-banner {
   border-color: rgba(211, 47, 47, 0.3);
 }
 
-/* ==========================================================================
-   APP ONBOARDING TOUR OVERLAY (Only after Sign Up)
-   ========================================================================== */
+
 
 .app-tour-overlay {
   position: absolute;
