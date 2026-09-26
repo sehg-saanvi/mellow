@@ -1,4 +1,3 @@
-# Exclude Node development server & utility files from Vercel deployment
 server.js
 crop.html
 .git
