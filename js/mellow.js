@@ -1,10 +1,7 @@
-// Mellow the Cat Companion & Virtual Cozy Room Engine
-// STRICTLY ZERO EMOJIS - Visual vectors and soft typography only.
-
 const MellowCat = {
   currentMood: 'calm',
 
-  // Render highly detailed, warm, fluffy ginger Mellow the Cat SVG (Inspired by FullLogo.jpg)
+
   render(mood = null, size = 96) {
     const activeMood = mood || this.currentMood || 'calm';
     const isSleepy = activeMood === 'sleepy';
@@ -15,7 +12,7 @@ const MellowCat = {
     MellowCat._idCounter = (MellowCat._idCounter || 0) + 1;
     const uid = `mc_${MellowCat._idCounter}_${Math.floor(Math.random() * 10000)}`;
 
-    // Expressions & Mood paths
+ 
     let eyesSvg = '';
     let accessoriesSvg = '';
     let moodAccentsSvg = '';
@@ -75,7 +72,7 @@ const MellowCat = {
         <path d="M 42 98 C 55 94 85 94 98 98" fill="none" stroke="#FFCC80" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="3,3"/>
       `;
     } else {
-      // Default Calm mood: Large gentle warm espresso eyes with dual specular catchlights
+    
       eyesSvg = `
         <!-- Left eye -->
         <ellipse cx="55" cy="55" rx="5.5" ry="6" fill="#4E2717"/>
@@ -193,7 +190,7 @@ const MellowCat = {
     `;
   },
 
-  // Contextual supportive phrases (Strictly zero emojis!)
+
   dialogues: {
     greetingMorning: "Good morning. Let's take today one little step at a time.",
     greetingAfternoon: "Good afternoon. Moving gently through the day.",
@@ -213,7 +210,7 @@ const MellowCat = {
     comfortPrompt: "You don't have to do everything today."
   },
 
-  // Collectibles in Mellow's Room (Pure visual collection, NO numerical counter!)
+ 
   collectibles: [
     {
       id: 'succulent',
@@ -325,7 +322,7 @@ const MellowCat = {
     }
   },
 
-  // Load unlocked state from localStorage
+
   initCollectibles() {
     const email = typeof AuthManager !== 'undefined' && AuthManager.currentUser ? AuthManager.currentUser.email : null;
     this.loadForAccount(email, false);
@@ -347,7 +344,7 @@ const MellowCat = {
     return item ? item.unlocked : false;
   },
 
-  // Occasionally unlock an item when meaningful progress happens
+
   maybeUnlockCollectible(triggerName = '') {
     const locked = this.collectibles.filter(c => !c.unlocked);
     if (locked.length === 0) return null;
@@ -359,7 +356,7 @@ const MellowCat = {
     return item;
   },
 
-  // Render the Gift discovery popup
+ 
   showGiftModal(item) {
     const modal = document.getElementById('gift-modal');
     if (!modal) return;
@@ -410,7 +407,7 @@ const MellowCat = {
     modal.classList.add('active');
   },
 
-  // Render Rich, Colorful, Realistic SVG Home Objects
+ 
   renderCollectibleArtwork(id, isSilhouette = false, size = 64) {
     const silClass = isSilhouette ? 'is-silhouette' : '';
     
@@ -700,7 +697,7 @@ const MellowCat = {
     }
   },
 
-  // Render a specific collectible slot inside the cozy room
+
   renderObjectSlot(id, customSize = 48) {
     const item = this.collectibles.find(c => c.id === id);
     if (!item) return '';
@@ -714,8 +711,7 @@ const MellowCat = {
     `;
   },
 
-  // Render the Visual Cozy Room Scene — authentic, warm home aesthetics
-  // NO NUMBER COUNTERS! Pure visual room and visual collection.
+
   renderRoomView() {
     const fairyLightsUnlocked = this.isUnlocked('fairy_lights');
 
