@@ -1,9 +1,5 @@
-// Reset Screen Controller for Mellow
-// Somatic regulation, breathing, gentle mental offloading, and comfort cards.
-// STRICTLY ZERO EMOJIS - Clean vectors, calm pacing.
-
 const ResetTools = {
-  currentTab: 'breathe', // 'breathe', 'dump', 'move', 'comfort', 'timer'
+  currentTab: 'breathe', 
   breathPhase: 'inhale',
   breathTimer: null,
   twoMinInterval: null,
@@ -102,7 +98,7 @@ const ResetTools = {
     }
   },
 
-  // Box Breathing cycle (4s Inhale, 4s Hold, 4s Exhale, 4s Rest)
+
   startBreathing() {
     const circle = document.getElementById('breathing-visual-circle');
     const label = document.getElementById('breathing-phase-label');
@@ -136,7 +132,7 @@ const ResetTools = {
     }
   },
 
-  // 2-Minute Reset
+  
   startTwoMinReset() {
     const timerElem = document.getElementById('two-min-countdown');
     const promptElem = document.getElementById('two-min-prompt-text');
@@ -168,7 +164,7 @@ const ResetTools = {
         const s = this.twoMinSeconds % 60;
         timerElem.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 
-        // Change prompt every 24s
+     
         const promptIdx = Math.floor((120 - this.twoMinSeconds) / 24);
         if (promptElem && prompts[promptIdx]) {
           promptElem.textContent = prompts[promptIdx];
@@ -184,7 +180,7 @@ const ResetTools = {
     }, 1000);
   },
 
-  // Brain Dump (Scoped per account)
+ 
   getStorageKey(email) {
     if (typeof AuthManager !== 'undefined' && AuthManager.getUserStorageKey) {
       return AuthManager.getUserStorageKey('mellow_braindump', email);
@@ -250,7 +246,7 @@ const ResetTools = {
     }
   },
 
-  // Comfort Cards Deck
+  
   renderComfortCard() {
     const container = document.getElementById('comfort-card-display');
     if (!container) return;
