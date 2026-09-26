@@ -1,6 +1,3 @@
-// Task Management, "Right Now", "Break It Down", and "Park It" Engine
-// STRICTLY ZERO EMOJIS - Clean vectors, calm language, and compassionate neurodivergent UX.
-
 const TaskManager = {
   tasks: [],
   parkedThoughts: [],
@@ -11,7 +8,7 @@ const TaskManager = {
       id: 'task-1',
       title: 'Finish Physics Question 1',
       date: new Date().toISOString().split('T')[0],
-      bucket: 'must', // 'must', 'nice', 'energy'
+      bucket: 'must', 
       completed: false,
       isRightNow: true,
       subtasks: [
@@ -67,7 +64,7 @@ const TaskManager = {
     const parkedKey = this.getStorageKey('mellow_parked', email);
 
     if (isNewSignUp) {
-      // BRAND NEW USER: Fresh, pristine starter tasks specifically for this account
+    
       this.tasks = JSON.parse(JSON.stringify(this.defaultTasks));
       this.parkedThoughts = JSON.parse(JSON.stringify(this.defaultParked));
       this.save(email);
@@ -120,14 +117,14 @@ const TaskManager = {
   },
 
   getRightNowTask() {
-    // 1. Explicitly set as Right Now
+  
     let rightNow = this.tasks.find(t => t.isRightNow && !t.completed);
     if (!rightNow) {
-      // 2. Or first incomplete 'must' task
+   
       rightNow = this.tasks.find(t => t.bucket === 'must' && !t.completed);
     }
     if (!rightNow) {
-      // 3. Any incomplete task
+  
       rightNow = this.tasks.find(t => !t.completed);
     }
     return rightNow || null;
@@ -144,7 +141,7 @@ const TaskManager = {
       id: 'task-' + Date.now(),
       title: title.trim(),
       date: date || new Date().toISOString().split('T')[0],
-      bucket: bucket, // 'must', 'nice', 'energy'
+      bucket: bucket, 
       completed: false,
       isRightNow: this.tasks.filter(t => !t.completed).length === 0,
       subtasks: []
@@ -165,7 +162,7 @@ const TaskManager = {
       if (sub) {
         sub.completed = !sub.completed;
       }
-      // Check if all subtasks completed
+
       if (task.subtasks.length > 0 && task.subtasks.every(s => s.completed)) {
         task.completed = true;
       } else {
@@ -183,7 +180,7 @@ const TaskManager = {
     if (task.completed) {
       MellowCat.currentMood = 'happy';
       App.setNotificationMessage(MellowCat.dialogues.taskCompleted);
-      // Small chance to unlock a collectible naturally without scores
+
       MellowCat.maybeUnlockCollectible('task_completed');
     }
 
@@ -219,7 +216,7 @@ const TaskManager = {
     this.renderPlan();
   },
 
-  // Break It Down workflow
+
   openBreakdownModal(taskId) {
     const task = this.tasks.find(t => t.id === taskId);
     if (!task) return;
@@ -231,7 +228,6 @@ const TaskManager = {
     const body = modal.querySelector('.breakdown-body');
     const existingSteps = task.subtasks || [];
 
-    // Starter suggestions based on task title keywords
     const isStudy = /study|read|book|exam|math|physics|chemistry/i.test(task.title);
     const isWrite = /write|essay|email|doc|draft/i.test(task.title);
     const isClean = /clean|tidy|room|wash|laundry/i.test(task.title);
@@ -380,7 +376,7 @@ const TaskManager = {
     }
   },
 
-  // Park It Feature
+
   openParkModal() {
     const modal = document.getElementById('park-modal');
     if (!modal) return;
@@ -410,7 +406,7 @@ const TaskManager = {
     this.save();
     input.value = '';
 
-    // Gentle instant response from Mellow
+  
     const feedback = document.getElementById('park-mellow-feedback');
     if (feedback) {
       feedback.classList.add('visible');
@@ -466,7 +462,7 @@ const TaskManager = {
     `).join('');
   },
 
-  // Render the Home Screen Tasks & Right Now
+
   renderHome() {
     const rightNowContainer = document.getElementById('home-right-now-container');
     const todayListContainer = document.getElementById('home-today-list');
@@ -559,7 +555,7 @@ const TaskManager = {
     }
   },
 
-  // Reschedule dialog (Non-punitive)
+
   openReschedulePrompt(taskId) {
     const task = this.tasks.find(t => t.id === taskId);
     if (!task) return;
@@ -595,7 +591,7 @@ const TaskManager = {
     if (modal) modal.classList.remove('active');
   },
 
-  // Render Plan Screen
+
   renderPlan() {
     const mustContainer = document.getElementById('plan-bucket-must');
     const niceContainer = document.getElementById('plan-bucket-nice');
