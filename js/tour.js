@@ -1,7 +1,3 @@
-// Interactive Onboarding Tour Engine for Mellow
-// Featuring Little Mellow as the personal, gentle guide.
-// STRICTLY ZERO EMOJIS in code logic, keeping soft pastel typography and clean vectors.
-
 const AppTour = {
   isActive: false,
   currentStepIndex: 0,
@@ -107,10 +103,10 @@ const AppTour = {
     this.currentStepIndex = 0;
     this.currentAccountEmail = accountEmail || (window.AuthManager && AuthManager.currentUser ? AuthManager.currentUser.email : null);
 
-    // Ensure overlay exists
+
     this.ensureOverlayExists();
 
-    // Attach resize and scroll listeners
+
     this.detachListeners();
     this._boundHandleResize = () => {
       if (this.isActive) this.updatePosition();
@@ -125,7 +121,6 @@ const AppTour = {
       viewport.addEventListener('scroll', this._boundHandleScroll, { passive: true });
     }
 
-    // Render step 1
     this.renderCurrentStep();
   },
 
@@ -164,7 +159,7 @@ const AppTour = {
       return;
     }
 
-    // Switch screen to show the corresponding feature
+  
     if (step.screen && typeof App !== 'undefined' && App.switchScreen) {
       if (App.currentScreen !== step.screen) {
         App.switchScreen(step.screen);
@@ -179,7 +174,7 @@ const AppTour = {
     const stepNum = this.currentStepIndex + 1;
     const totalSteps = this.steps.length;
 
-    // Render Little Mellow companion visual for the tour card
+  
     const catHtml = (typeof MellowCat !== 'undefined' && MellowCat.render)
       ? MellowCat.render(step.catMood || 'calm', 44)
       : `<img src="public/mellow-logo-cat.png" alt="Mellow" style="width:36px;height:36px;object-fit:contain;">`;
@@ -232,7 +227,7 @@ const AppTour = {
       </div>
     `;
 
-    // Position spotlight & tooltip
+    
     this.updatePosition();
     requestAnimationFrame(() => {
       this.updatePosition();
@@ -261,7 +256,7 @@ const AppTour = {
     const shellRect = shell.getBoundingClientRect();
     const targetRect = targetEl.getBoundingClientRect();
 
-    // If target element is scrollable inside the app viewport, align smoothly
+  
     const viewport = document.querySelector('.app-screen-viewport');
     if (viewport && targetEl.closest('.app-screen-viewport')) {
       const vpRect = viewport.getBoundingClientRect();
@@ -272,13 +267,13 @@ const AppTour = {
 
     const updatedTargetRect = targetEl.getBoundingClientRect();
 
-    // Spotlight coordinates relative to mobile shell
+
     const spotLeft = Math.max(0, updatedTargetRect.left - shellRect.left);
     const spotTop = Math.max(0, updatedTargetRect.top - shellRect.top);
     const spotWidth = updatedTargetRect.width;
     const spotHeight = updatedTargetRect.height;
 
-    // Apply spotlight box positioning
+ 
     const padding = 6;
     spotlight.style.left = `${spotLeft - padding}px`;
     spotlight.style.top = `${spotTop - padding}px`;
@@ -288,7 +283,7 @@ const AppTour = {
     const targetRadius = window.getComputedStyle(targetEl).borderRadius;
     spotlight.style.borderRadius = (targetRadius && targetRadius !== '0px') ? targetRadius : '16px';
 
-    // Tooltip positioning
+ 
     const tooltipWidth = Math.min(shellRect.width - 24, 345);
     tooltip.style.width = `${tooltipWidth}px`;
     const tooltipHeight = tooltip.offsetHeight || 205;
@@ -300,7 +295,7 @@ const AppTour = {
     const preferTop = step.placement === 'top' || !fitsBelow;
 
     if (preferTop && (spotTop - tooltipHeight - 14) >= 10) {
-      // Place above target
+   
       topPos = spotTop - tooltipHeight - 14;
       if (pointer) {
         pointer.className = 'tour-tooltip-pointer pointer-down';
@@ -309,7 +304,7 @@ const AppTour = {
         pointer.style.left = `${pointerLeft}px`;
       }
     } else {
-      // Place below target
+      
       topPos = spotTop + spotHeight + 14;
       if (pointer) {
         pointer.className = 'tour-tooltip-pointer pointer-up';
@@ -319,7 +314,7 @@ const AppTour = {
       }
     }
 
-    // Keep tooltip strictly inside phone shell boundary
+ 
     topPos = Math.max(14, Math.min(shellRect.height - tooltipHeight - 14, topPos));
 
     tooltip.style.left = `${leftPos}px`;
@@ -349,7 +344,6 @@ const AppTour = {
   finish() {
     this.isActive = false;
 
-    // Remove overlay element
     const overlay = document.getElementById('app-tour-overlay');
     if (overlay) {
       overlay.classList.remove('active');
@@ -362,12 +356,12 @@ const AppTour = {
 
     this.detachListeners();
 
-    // Mark persistent tour completion for this individual account
+
     if (typeof AuthManager !== 'undefined' && AuthManager.markTourCompleted) {
       AuthManager.markTourCompleted(this.currentAccountEmail);
     }
 
-    // Always return user cleanly to the Home screen
+   
     if (typeof App !== 'undefined') {
       if (App.switchScreen) App.switchScreen('home');
       if (App.setNotificationMessage) {
@@ -386,6 +380,6 @@ const AppTour = {
   }
 };
 
-// Global export for inline event handlers and multi-module access
+
 window.AppTour = AppTour;
 
