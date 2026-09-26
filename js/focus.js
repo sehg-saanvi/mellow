@@ -1,6 +1,3 @@
-// Focus Screen & Pomodoro Controller for Mellow
-// STRICTLY ZERO EMOJIS - Low sensory pressure, ambient sound integration.
-
 const FocusSession = {
   activeTaskId: null,
   activeTaskTitle: 'Deep breathing & reading',
@@ -154,10 +151,10 @@ const FocusSession = {
     }
     this.isRunning = false;
 
-    // Gentle soft bell chime via Web Audio (no harsh buzzer!)
+
     this.playGentleChime();
 
-    // Occasional Little Win / collectible
+
     MellowCat.maybeUnlockCollectible('focus_completed');
 
     this.showSessionCompleteModal();
@@ -171,7 +168,7 @@ const FocusSession = {
       const gain = ctx.createGain();
 
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(528, ctx.currentTime); // Solfeggio 528Hz calm tone
+      osc.frequency.setValueAtTime(528, ctx.currentTime); 
       gain.gain.setValueAtTime(0.001, ctx.currentTime);
       gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + 0.1);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.5);
