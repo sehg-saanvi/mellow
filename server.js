@@ -1,4 +1,3 @@
-// Lightweight static HTTP server for Mellow local testing
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -21,7 +20,7 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   let reqPath = decodeURIComponent(req.url.split('?')[0]);
 
-  // API: List files in public directory for inspiration/references
+
   if (reqPath === '/api/public-images') {
     const publicDir = path.join(__dirname, 'public');
     fs.readdir(publicDir, (err, files) => {
@@ -38,7 +37,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API: Save cropped logo
+
   if (reqPath === '/api/save-cropped-logo' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);
