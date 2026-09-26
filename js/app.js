@@ -1,7 +1,3 @@
-// Mellow Application Controller
-// Orchestrates navigation, sliding drawer, profile state, and themes.
-// STRICTLY ZERO EMOJIS - Clean vectors, calm neurodivergent-first architecture.
-
 const App = {
   currentScreen: 'home',
   recentNotification: null,
@@ -18,7 +14,7 @@ const App = {
     highContrast: false,
     soundEffects: true
   },
-  currentEnergy: 'okay', // 'low', 'okay', 'good', 'high'
+  currentEnergy: 'okay', 
 
   init() {
     this.loadState();
@@ -27,37 +23,37 @@ const App = {
     this.setupEnergyCheckin();
     this.setupBottomMellowHome();
 
-    // Initialize sub-modules
+    
     MellowCat.initCollectibles();
     TaskManager.init();
     FocusSession.init();
     Community.init();
     ResetTools.init();
 
-    // Initialize Auth state
+    
     const auth = window.AuthManager || (typeof AuthManager !== 'undefined' ? AuthManager : null);
     if (auth) {
       auth.init();
     }
 
-    // Initial renders
+    
     TaskManager.renderHome();
     TaskManager.renderPlan();
     this.updateGreeting();
     this.renderSidebarProfile();
 
-    // Render initial Mellow cat on home
+    
     const homeCat = document.getElementById('home-mellow-illustration');
     if (homeCat) homeCat.innerHTML = MellowCat.render('calm', 100);
 
-    // Render focus screen cat
+    
     const focusCat = document.getElementById('focus-cat-display');
     if (focusCat) focusCat.innerHTML = MellowCat.render('calm', 88);
 
-    // Apply energy on load (updates cat mood)
+   
     this.applyEnergyUI();
 
-    // Default gentle recent notification (fades after 9s)
+ 
     this.setNotificationMessage('Mellow is quietly resting beside you.');
   },
 
@@ -113,7 +109,7 @@ const App = {
     const email = user.email;
 
     if (isNewSignUp) {
-      // BRAND NEW USER: start completely fresh, no prior user's data!
+      
       this.userProfile = {
         name: user.name || 'Friend',
         email: user.email,
@@ -130,7 +126,7 @@ const App = {
       this.currentEnergy = 'okay';
       this.saveState();
     } else {
-      // EXISTING SIGN IN: Load strictly saved data for this account
+      
       this.userProfile = {
         name: user.name || 'Friend',
         email: user.email,
@@ -149,7 +145,7 @@ const App = {
     this.renderSidebarProfile();
     this.renderAccountSettings();
 
-    // Initialize/load all modules for this specific account
+   
     if (typeof TaskManager !== 'undefined' && TaskManager.loadForAccount) {
       TaskManager.loadForAccount(email, isNewSignUp);
     }
@@ -163,7 +159,7 @@ const App = {
       Community.loadForAccount(email, isNewSignUp);
     }
 
-    // Refresh display
+   
     const homeCat = document.getElementById('home-mellow-illustration');
     if (homeCat) homeCat.innerHTML = MellowCat.render('calm', 100);
 
@@ -215,7 +211,7 @@ const App = {
     if (name && name.trim()) this.userProfile.name = name.trim();
     if (avatarKey !== undefined && avatarKey !== null) {
       this.userProfile.avatarKey = avatarKey;
-      this.userProfile.photoUrl = null; // selecting preset vector clears custom photo
+      this.userProfile.photoUrl = null;
     }
     if (photoUrl !== undefined) {
       this.userProfile.photoUrl = photoUrl;
@@ -226,7 +222,7 @@ const App = {
     if (typeof Community !== 'undefined') Community.render();
     this.renderAccountSettings();
 
-    // Persist profile updates in account record
+    
     if (typeof AuthManager !== 'undefined' && AuthManager.updateAccountProfile && this.userProfile.email) {
       AuthManager.updateAccountProfile(this.userProfile.email, {
         name: this.userProfile.name,
@@ -251,14 +247,14 @@ const App = {
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
-        // Compress & scale to square 200x200 canvas to safely fit in localStorage
+        
         const canvas = document.createElement('canvas');
         const size = 200;
         canvas.width = size;
         canvas.height = size;
         const ctx = canvas.getContext('2d');
 
-        // Draw centered square crop
+       
         const minDim = Math.min(img.width, img.height);
         const sx = (img.width - minDim) / 2;
         const sy = (img.height - minDim) / 2;
@@ -282,7 +278,7 @@ const App = {
     this.setNotificationMessage('Profile photo removed.');
   },
 
-  // Sidebar Open / Close
+ 
   setupSidebar() {
     const sidebar = document.getElementById('slide-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -299,7 +295,7 @@ const App = {
       overlay.addEventListener('click', () => this.closeSidebar());
     }
 
-    // Sidebar navigation links
+    
     document.querySelectorAll('.sidebar-nav-item').forEach(item => {
       item.addEventListener('click', () => {
         const target = item.getAttribute('data-screen');
@@ -343,11 +339,11 @@ const App = {
     if (nameSlot) nameSlot.textContent = this.userProfile.name;
   },
 
-  // Screen Switching
+  
   switchScreen(screenName) {
     this.currentScreen = screenName;
 
-    // Update active screen DOM
+   
     document.querySelectorAll('.app-screen').forEach(screen => {
       if (screen.id === `screen-${screenName}`) {
         screen.classList.add('active');
@@ -356,7 +352,7 @@ const App = {
       }
     });
 
-    // Update active link in sidebar
+    
     document.querySelectorAll('.sidebar-nav-item').forEach(item => {
       if (item.getAttribute('data-screen') === screenName) {
         item.classList.add('active');
@@ -365,10 +361,10 @@ const App = {
       }
     });
 
-    // Keep the bottom kitten home bar always fresh and consistent
+   
     this.setupBottomMellowHome();
 
-    // Screen specific refreshes
+    
     if (screenName === 'home') {
       TaskManager.renderHome();
       this.updateGreeting();
@@ -391,8 +387,7 @@ const App = {
     }
   },
 
-  // Top Bar Greeting and Recent Notification
-  // Rule: On top just the greeting, and the very recent notification, otherwise empty just greeting
+  
   updateGreeting() {
     const greetingText = document.getElementById('top-bar-greeting-text');
     if (!greetingText) return;
@@ -420,7 +415,7 @@ const App = {
         pill.classList.add('visible');
 
         if (this.notificationTimeout) clearTimeout(this.notificationTimeout);
-        // Gently hide after 9 seconds, leaving top bar clean with just the greeting
+       
         this.notificationTimeout = setTimeout(() => {
           pill.classList.remove('visible');
           pill.classList.add('hidden');
@@ -437,7 +432,7 @@ const App = {
     this.setNotificationMessage(null);
   },
 
-  // Bottom Area: Visuals of Mellow Cat and Her Home
+  
   setupBottomMellowHome() {
     const bottomContainer = document.getElementById('bottom-mellow-home-bar');
     if (!bottomContainer) return;
@@ -460,7 +455,7 @@ const App = {
     `;
   },
 
-  // Energy Check-in
+
   setupEnergyCheckin() {
     const options = document.querySelectorAll('.energy-chip');
     options.forEach(chip => {
@@ -511,7 +506,7 @@ const App = {
     });
   },
 
-  // Settings & Theme
+  
   toggleTheme() {
     this.settings.darkMode = !this.settings.darkMode;
     this.saveState();
@@ -523,42 +518,42 @@ const App = {
     const root = document.documentElement;
     if (!root) return;
 
-    // Dark Mode
+    
     if (this.settings.darkMode) {
       root.classList.add('dark-theme');
     } else {
       root.classList.remove('dark-theme');
     }
 
-    // Reduced Motion
+   
     if (this.settings.reducedMotion) {
       root.classList.add('reduced-motion');
     } else {
       root.classList.remove('reduced-motion');
     }
 
-    // Large Text
+  
     if (this.settings.largeText) {
       root.classList.add('large-text');
     } else {
       root.classList.remove('large-text');
     }
 
-    // High Contrast
+  
     if (this.settings.highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
 
-    // Sidebar theme icon update
+   
     const themeIcon = document.getElementById('sidebar-theme-icon');
     if (themeIcon) {
       themeIcon.innerHTML = this.settings.darkMode ? Icons.sun : Icons.moon;
     }
   },
 
-  // Render Account & Settings Screen
+
   renderAccountSettings() {
     const container = document.getElementById('account-settings-container');
     if (!container) return;
@@ -741,7 +736,7 @@ const App = {
   }
 };
 
-// Global export for window access and inline handlers
+
 window.App = App;
 
 window.addEventListener('DOMContentLoaded', () => {
