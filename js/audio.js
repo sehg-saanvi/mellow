@@ -1,7 +1,3 @@
-// Mellow Offline Web Audio Ambient Generator
-// Zero external files, zero network requests, zero emojis.
-// Safe, gentle soundscapes synthesized directly in the browser.
-
 const FocusAudio = {
   ctx: null,
   masterGain: null,
@@ -61,7 +57,7 @@ const FocusAudio = {
 
   togglePlay() {
     if (this.currentTrack === 'silence') {
-      this.currentTrack = 'brown'; // default soft sound if silence is clicked to play
+      this.currentTrack = 'brown'; 
     }
     if (this.isPlaying) {
       this.stopAll();
@@ -102,7 +98,7 @@ const FocusAudio = {
     }
   },
 
-  // Generates soothing Brown Noise (deep low-frequency warmth, heavily favored for ADHD focus)
+ 
   startBrownNoise() {
     const bufferSize = this.ctx.sampleRate * 2;
     const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -112,14 +108,14 @@ const FocusAudio = {
       const white = Math.random() * 2 - 1;
       output[i] = (lastOut + (0.02 * white)) / 1.02;
       lastOut = output[i];
-      output[i] *= 3.5; // Gain boost
+      output[i] *= 3.5; 
     }
 
     const whiteNoise = this.ctx.createBufferSource();
     whiteNoise.buffer = noiseBuffer;
     whiteNoise.loop = true;
 
-    // Soft lowpass filter to make it mellow and warm
+  
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(320, this.ctx.currentTime);
@@ -135,7 +131,7 @@ const FocusAudio = {
     this.activeNodes.push(whiteNoise, filter, gain);
   },
 
-  // Synthesize soft pattering rain with dual filters
+
   startRain() {
     const bufferSize = this.ctx.sampleRate * 2;
     const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -169,13 +165,13 @@ const FocusAudio = {
     this.activeNodes.push(rainSource, bandpass, lowpass, gain);
   },
 
-  // Synthesize peaceful procedural electric piano/rhodes chords
+  
   startLofi() {
     const chords = [
-      [261.63, 329.63, 392.00, 493.88], // Cmaj7
-      [220.00, 261.63, 329.63, 392.00], // Am7
-      [174.61, 220.00, 261.63, 329.63], // Fmaj7
-      [196.00, 246.94, 293.66, 349.23]  // G7
+      [261.63, 329.63, 392.00, 493.88],
+      [220.00, 261.63, 329.63, 392.00], 
+      [174.61, 220.00, 261.63, 329.63], 
+      [196.00, 246.94, 293.66, 349.23] 
     ];
     let chordIdx = 0;
 
@@ -195,7 +191,7 @@ const FocusAudio = {
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(650, this.ctx.currentTime);
 
-        // Soft gentle envelope
+        
         const now = this.ctx.currentTime + (i * 0.04);
         gain.gain.setValueAtTime(0.001, now);
         gain.gain.linearRampToValueAtTime(0.08, now + 0.3);
@@ -214,7 +210,7 @@ const FocusAudio = {
     this.lofiInterval = setInterval(playChord, 3800);
   },
 
-  // Synthesize rhythmic ocean waves via LFO-modulated noise
+ 
   startOcean() {
     const bufferSize = this.ctx.sampleRate * 3;
     const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -231,10 +227,10 @@ const FocusAudio = {
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(400, this.ctx.currentTime);
 
-    // LFO for wave swelling
+    
     const lfo = this.ctx.createOscillator();
     lfo.type = 'sine';
-    lfo.frequency.setValueAtTime(0.12, this.ctx.currentTime); // 8 second wave cycle
+    lfo.frequency.setValueAtTime(0.12, this.ctx.currentTime); 
 
     const lfoGain = this.ctx.createGain();
     lfoGain.gain.setValueAtTime(250, this.ctx.currentTime);
@@ -253,7 +249,7 @@ const FocusAudio = {
     this.activeNodes.push(noise, filter, lfo, lfoGain, gain);
   },
 
-  // Soft cafe resonance
+ 
   startCafe() {
     const bufferSize = this.ctx.sampleRate * 2;
     const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
@@ -281,9 +277,9 @@ const FocusAudio = {
     this.activeNodes.push(noise, band1, gain);
   },
 
-  // Gentle harmonic drone
+ 
   startAmbient() {
-    const freqs = [130.81, 196.00, 261.63]; // C3, G3, C4
+    const freqs = [130.81, 196.00, 261.63]; 
     freqs.forEach(freq => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
