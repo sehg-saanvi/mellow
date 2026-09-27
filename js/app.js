@@ -3,7 +3,8 @@ const App = {
   recentNotification: null,
   notificationTimeout: null,
   userProfile: {
-    name: 'Saanvi',
+    name: 'Kivi',
+    email: 'kivi@gmail.com',
     avatarKey: 'avatar1',
     photoUrl: null
   },

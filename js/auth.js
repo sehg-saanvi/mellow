@@ -2,7 +2,18 @@ const AuthManager = {
   currentUser: null,
   isSignUpMode: false,
 
+  KIVI_ACCOUNT: {
+    name: 'Kivi',
+    email: 'kivi@gmail.com',
+    password: '15082009',
+    avatarKey: 'avatar1',
+    photoUrl: null,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    tourCompleted: true
+  },
+
   init() {
+    this.enforceSingleKiviAccount();
     this.loadSession();
     this.renderAuthUI();
 
@@ -19,8 +30,38 @@ const AuthManager = {
     }
   },
 
+  enforceSingleKiviAccount() {
+    try {
+      const kivi = { ...this.KIVI_ACCOUNT };
+      localStorage.setItem('mellow_accounts', JSON.stringify([kivi]));
+
+      // Clean old accounts and legacy keys
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('mellow_profile_') || key.startsWith('mellow_settings_') || key.startsWith('mellow_tasks_') || key.startsWith('mellow_energy_') || key.startsWith('mellow_tour_') || key.startsWith('mellow_parked_') || key.startsWith('mellow_collectibles_'))) {
+          if (!key.toLowerCase().endsWith('_kivi@gmail.com')) {
+            keysToRemove.push(key);
+          }
+        }
+      }
+      keysToRemove.forEach(k => localStorage.removeItem(k));
+
+      // Ensure currentUser session points to Kivi
+      const sessionData = localStorage.getItem('mellow_current_user');
+      if (sessionData) {
+        const session = JSON.parse(sessionData);
+        if (!session || !session.email || session.email.toLowerCase() !== 'kivi@gmail.com') {
+          localStorage.setItem('mellow_current_user', JSON.stringify({ name: 'Kivi', email: 'kivi@gmail.com', tourCompleted: true }));
+        }
+      } else {
+        localStorage.setItem('mellow_current_user', JSON.stringify({ name: 'Kivi', email: 'kivi@gmail.com', tourCompleted: true }));
+      }
+    } catch (e) {}
+  },
+
   getUserStorageKey(baseKey, email) {
-    const targetEmail = (email || (this.currentUser ? this.currentUser.email : '') || '').toLowerCase().trim();
+    const targetEmail = (email || (this.currentUser ? this.currentUser.email : '') || 'kivi@gmail.com').toLowerCase().trim();
     if (!targetEmail) return baseKey;
     return `${baseKey}_${targetEmail}`;
   },
@@ -47,10 +88,15 @@ const AuthManager = {
   getAccounts() {
     try {
       const data = localStorage.getItem('mellow_accounts');
-      return data ? JSON.parse(data) : [];
-    } catch (e) {
-      return [];
-    }
+      if (data) {
+        const list = JSON.parse(data);
+        if (Array.isArray(list) && list.length > 0) {
+          const kiviAcc = list.find(a => a.email && a.email.toLowerCase() === 'kivi@gmail.com');
+          if (kiviAcc) return [kiviAcc];
+        }
+      }
+    } catch (e) {}
+    return [{ ...this.KIVI_ACCOUNT }];
   },
 
   saveAccounts(accounts) {
@@ -62,9 +108,17 @@ const AuthManager = {
   loadSession() {
     try {
       const data = localStorage.getItem('mellow_current_user');
-      this.currentUser = data ? JSON.parse(data) : null;
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (parsed && parsed.email && parsed.email.toLowerCase() === 'kivi@gmail.com') {
+          this.currentUser = parsed;
+          return;
+        }
+      }
+      this.currentUser = { name: 'Kivi', email: 'kivi@gmail.com', tourCompleted: true };
+      localStorage.setItem('mellow_current_user', JSON.stringify(this.currentUser));
     } catch (e) {
-      this.currentUser = null;
+      this.currentUser = { name: 'Kivi', email: 'kivi@gmail.com', tourCompleted: true };
     }
   },
 
